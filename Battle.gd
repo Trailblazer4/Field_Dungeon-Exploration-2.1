@@ -8,14 +8,12 @@ func transition(i: int, j: int):
 	q[j] = true
 
 @onready var battleCamera = $"Camera2D"
-#var battle_info
-#var party = GameData.party
 var enemies = []
 var randy: RandomNumberGenerator = RandomNumberGenerator.new()
 var turnOrder = []
 var thisTurn
 var turnSet: bool = false
-# Called when the node enters the scene tree for the first time.
+
 func _ready():
 	# set background to whatever locationInfo/subLocationInfo tells you is the location of the battle
 	for i in range(len(GameData.party.get_children())):
@@ -52,17 +50,9 @@ func _process(delta):
 		speedInsertSort(turnOrder)
 
 
-# the structure of the turn under "if thisTurn" should be:
+# the structure of the turn under "if thisTurn" is:
 	# similar to a FSM, using states of the battle scene with booleans in a list,
-	# and having "if q[0]... elif q[1]..." statements
-	# each if-elif state will call one of the following functions:
-	# if $Enemies.get_children().has(thisTurn):
-	#	enemyScreen()     in this state, enemy AI makes decisions
-	# elif q[0]: mainScreen()
-	# elif q[1]: defendScreen()
-	# elif q[2]: magicScreen()
-	# elif q[3]: itemScreen()
-	# elif q[4]: chooseScreen()
+	# and having "if q[0]... elif q[1]..." statements to determine the current "state" of battle
 	if thisTurn:
 		if thisTurn in $Enemies.get_children():
 			enemyTurn()
@@ -77,7 +67,6 @@ func _process(delta):
 		elif q[4]:
 			var theresATarget = chooseScreen()
 			if theresATarget:
-				#print(target)
 				await thisTurn.get_child(0).use(chosenMove, target)
 				if target.getHP() <= 0:
 					target.setHP(0)
@@ -94,7 +83,6 @@ func _process(delta):
 			turnSet = false
 			turnOrder[0].get_child(0).updateCounter(true)
 			turnOrder.append(turnOrder.pop_front())
-			#speedInsertSort(turnOrder)
 
 		#if Input.is_key_pressed(KEY_V):
 			#for i in range(len($Party.get_children())):
@@ -109,13 +97,6 @@ func _process(delta):
 		
 		# decided is set to true if some decision is made, i.e. player confirms to defend,
 		# or a target for an attack, spell, or item is selected
-		
-		
-		#var theresATarget = chooseScreen()
-		# if theresATarget:
-			# based on decision, use an attack, spell, or item
-			## thisTurn.use(skill, target)
-			#decided = true
 
 
 func mainScreen(): # q[0]
@@ -157,11 +138,6 @@ func magicScreen(): # q[2]
 		$"Battle HUD/MagicMenu".process_mode = Node.PROCESS_MODE_DISABLED
 		$"Battle HUD/MagicMenu".visible = false
 		transition(2, 0)
-	#if Input.is_action_just_pressed("confirm"):
-	#	$"Battle HUD/MagicMenu".process_mode = Node.PROCESS_MODE_DISABLED
-	#	$"Battle HUD/MagicMenu".visible = false
-	#	chosenMove = thisTurn.get_child(0).moveset[$"Battle HUD/MagicMenu".cursor]
-	#	transition(2, 4)
 
 
 func itemScreen(): # q[3]
@@ -176,11 +152,6 @@ func itemScreen(): # q[3]
 		$"Battle HUD/ItemsMenu".process_mode = Node.PROCESS_MODE_DISABLED
 		$"Battle HUD/ItemsMenu".visible = false
 		transition(3, 0)
-	#if Input.is_action_just_pressed("confirm"):
-		#$"Battle HUD/ItemsMenu".process_mode = Node.PROCESS_MODE_DISABLED
-		#$"Battle HUD/ItemsMenu".visible = false
-		#chosenMove = GameData.inventory[$"Battle HUD/ItemsMenu".cursor]
-		#transition(3, 4)
 
 
 var cursor = 4 # 4 represents enemy 0 in "enemies"
@@ -227,10 +198,7 @@ func chooseScreen(): # q[4], called when ready to use an attack, skill, or item 
 
 
 func set_target(move_amount: int):
-	#if target_original_shader:
 	target.get_node("Sprite2D").material.shader = target_original_shader
-	#else:
-		#target.get_node("Sprite2D").material.shader = null
 
 	cursor += move_amount
 	if cursor < 0:
@@ -252,7 +220,7 @@ func handle_shader():
 		target.get_node("Sprite2D").material = ShaderMaterial.new()
 	target_original_shader = target.get_node("Sprite2D").material.shader
 	target.get_node("Sprite2D").material.shader = highlight_shader
-	#print(target_original_shader)
+
 
 # func battleOver():
 # get_tree().change_scene_to_file(res://battle_info.locationName.tscn)
