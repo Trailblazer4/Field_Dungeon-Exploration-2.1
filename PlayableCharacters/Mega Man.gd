@@ -3,13 +3,14 @@ extends Entity
 
 func _init():
 	super()
-	myName = "Atom"
+	myName = "Rock Man"
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	moveset.append(GameData.SpellLibrary["Rocket Boosters"])
-	# lets Atom fly, or something like that
+	moveset.append(GameData.SpellLibrary["Pew Pew"])
+	moveset.append(GameData.SpellLibrary["Ar"])
+	moveset.append(GameData.SpellLibrary["Re"])
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -28,6 +29,10 @@ func walk(v: Vector2):
 func face(d: Vector2):
 	$Sprite2D/AnimationPlayer.stop()
 	$Sprite2D.set_frame(0)
+	#if d.x < 0:
+		#$Sprite2D.flip_h = true
+	#elif d.x > 0:
+		#$Sprite2D.flip_h = false
 
 
 func face_left():

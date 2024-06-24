@@ -11,6 +11,8 @@ var cinnamoroll = load("res://PlayableCharacters/Cinnamoroll.tscn").instantiate(
 var misty = load("res://PlayableCharacters/Misty.tscn").instantiate()
 var link = load("res://PlayableCharacters/Link.tscn").instantiate()
 var fei = load("res://PlayableCharacters/Fei.tscn").instantiate()
+var rockman = load("res://PlayableCharacters/Mega Man.tscn").instantiate()
+var atom = load("res://PlayableCharacters/Atom.tscn").instantiate()
 
 # define status functions here followed by creating a list of funcrefs
 func burn():
@@ -30,6 +32,8 @@ var SpellLibrary: Dictionary = {
 	"Re": Spell.new("Re", Element.HEAL, 20, 20),
 	"Reli": Spell.new("Reli", Element.HEAL, 40, 30),
 	"Temp": Spell.new("Temp", Element.WIND, 40, 30),
+	"Pew Pew": Spell.new("Pew Pew", Element.LIGHTNING, 15, 0),
+	"Rocket Boosters": Spell.new("Rocket Boosters", Element.LIGHTNING, 0, 20),
 }
 
 
@@ -131,6 +135,8 @@ func _ready():
 	ALL_PLAYABLE_CHARACTERS.append(misty)
 	ALL_PLAYABLE_CHARACTERS.append(link)
 	ALL_PLAYABLE_CHARACTERS.append(fei)
+	ALL_PLAYABLE_CHARACTERS.append(rockman)
+	ALL_PLAYABLE_CHARACTERS.append(atom)
 	print(ALL_PLAYABLE_CHARACTERS[-1])
 
 	# put characters in the party
@@ -146,12 +152,12 @@ func _ready():
 	#party.get_child(2).add_child(link)
 	#collision_objects.append(link.get_child(1))
 	#print(party.get_child(-2).get_child(0)) # negative index works with get_child, too!
-	addToParty(cinnamoroll, 0)
-	addToParty(misty, 1)
+	addToParty(atom, 0)
+	addToParty(rockman, 1)
 	addToParty(link, 2)
 	addToParty(fei, 3)
-	swapParty(0, 2)
-	swapParty(0, 3)
+	swapParty(0, 1)
+	swapParty(1, 3)
 
 	#swapParty(0, 2)
 	#removeFromParty(1)

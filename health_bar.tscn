@@ -1,0 +1,85 @@
+[gd_scene load_steps=6 format=3 uid="uid://suhyoxj47luv"]
+
+[ext_resource type="Script" path="res://HealthBar.gd" id="1_fduk5"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_veq5e"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_08tcx"]
+bg_color = Color(0.282353, 0.709804, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_c8jhy"]
+bg_color = Color(0.121569, 0.121569, 0.121569, 1)
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+shadow_color = Color(0, 0, 0, 0.27451)
+shadow_offset = Vector2(2.08165e-12, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vofyy"]
+bg_color = Color(1, 0.101961, 0, 1)
+
+[node name="HealthBar" type="ProgressBar"]
+z_index = 1
+offset_top = 12.0
+offset_right = 148.0
+offset_bottom = 39.0
+theme_override_styles/background = SubResource("StyleBoxEmpty_veq5e")
+theme_override_styles/fill = SubResource("StyleBoxFlat_08tcx")
+show_percentage = false
+script = ExtResource("1_fduk5")
+
+[node name="DamageBar" type="ProgressBar" parent="."]
+z_index = -1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_c8jhy")
+theme_override_styles/fill = SubResource("StyleBoxFlat_vofyy")
+step = 1.0
+show_percentage = false
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.4
+one_shot = true
+
+[node name="Label1" type="Label" parent="."]
+z_index = 2
+layout_mode = 0
+offset_left = 37.0
+offset_top = 12.0
+offset_right = 93.0
+offset_bottom = 46.0
+scale = Vector2(0.05, 0.05)
+theme_override_colors/font_color = Color(0.92549, 0.921569, 0.909804, 1)
+theme_override_font_sizes/font_size = 240
+text = "9999"
+horizontal_alignment = 2
+
+[node name="Label2" type="Label" parent="."]
+z_index = 2
+offset_left = 70.0
+offset_top = 12.0
+offset_right = 75.0
+offset_bottom = 29.0
+scale = Vector2(0.05, 0.05)
+theme_override_colors/font_color = Color(0.92549, 0.921569, 0.909804, 1)
+theme_override_font_sizes/font_size = 240
+text = "/"
+horizontal_alignment = 1
+
+[node name="Label3" type="Label" parent="."]
+z_index = 2
+offset_left = 80.0
+offset_top = 12.0
+offset_right = 136.0
+offset_bottom = 46.0
+scale = Vector2(0.05, 0.05)
+theme_override_colors/font_color = Color(0.92549, 0.921569, 0.909804, 1)
+theme_override_font_sizes/font_size = 240
+text = "9999"
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

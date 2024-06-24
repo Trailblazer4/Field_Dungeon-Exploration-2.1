@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bcvmqdpkko1ei"]
+[gd_scene load_steps=14 format=3 uid="uid://bcvmqdpkko1ei"]
 
 [ext_resource type="Script" path="res://Battle.gd" id="1_i6x73"]
 [ext_resource type="Script" path="res://Party1Battle.gd" id="3_xkxwl"]
@@ -8,6 +8,15 @@
 [ext_resource type="Script" path="res://Party4Battle.gd" id="6_2p83i"]
 [ext_resource type="PackedScene" path="res://battle_wheel.tscn" id="8_5ukcn"]
 [ext_resource type="PackedScene" uid="uid://b7xgk3gh6kpqy" path="res://BattleMenu.tscn" id="9_d36qt"]
+[ext_resource type="PackedScene" uid="uid://suhyoxj47luv" path="res://health_bar.tscn" id="9_xdigg"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jkaca"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xey7l"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_eyvak"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mc30u"]
 
 [node name="Battle" type="Node2D"]
 script = ExtResource("1_i6x73")
@@ -75,3 +84,74 @@ offset_top = -247.0
 offset_right = 295.0
 offset_bottom = 286.0
 scale = Vector2(0.8, 0.8)
+
+[node name="Name0" type="Label" parent="Battle HUD"]
+material = SubResource("ShaderMaterial_jkaca")
+offset_left = 234.0
+offset_top = -241.0
+offset_right = 410.0
+offset_bottom = -210.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 2
+
+[node name="Name1" type="Label" parent="Battle HUD"]
+material = SubResource("ShaderMaterial_xey7l")
+offset_left = 234.0
+offset_top = -197.0
+offset_right = 410.0
+offset_bottom = -166.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 2
+
+[node name="Name2" type="Label" parent="Battle HUD"]
+material = SubResource("ShaderMaterial_eyvak")
+offset_left = 230.0
+offset_top = -154.0
+offset_right = 411.0
+offset_bottom = -123.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 2
+
+[node name="Name3" type="Label" parent="Battle HUD"]
+material = SubResource("ShaderMaterial_mc30u")
+offset_left = 235.0
+offset_top = -110.0
+offset_right = 411.0
+offset_bottom = -79.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 2
+
+[node name="HealthBars" type="Node2D" parent="Battle HUD"]
+position = Vector2(29, -2)
+
+[node name="HealthBar0" parent="Battle HUD/HealthBars" instance=ExtResource("9_xdigg")]
+visible = false
+offset_left = 388.0
+offset_top = -238.0
+offset_right = 536.0
+offset_bottom = -211.0
+
+[node name="HealthBar1" parent="Battle HUD/HealthBars" instance=ExtResource("9_xdigg")]
+visible = false
+offset_left = 388.0
+offset_top = -194.0
+offset_right = 536.0
+offset_bottom = -167.0
+
+[node name="HealthBar2" parent="Battle HUD/HealthBars" instance=ExtResource("9_xdigg")]
+visible = false
+offset_left = 389.0
+offset_top = -150.0
+offset_right = 537.0
+offset_bottom = -123.0
+
+[node name="HealthBar3" parent="Battle HUD/HealthBars" instance=ExtResource("9_xdigg")]
+visible = false
+offset_left = 389.0
+offset_top = -107.0
+offset_right = 537.0
+offset_bottom = -80.0

@@ -12,6 +12,8 @@ var moveset: Array[Spell] = []
 @onready var basic_attack: Spell = GameData.SpellLibrary["Punch"]
 var defending: bool = false
 
+var health_bar
+
 func _init():
 	stats = [180, 24, 20, 15, 13, 12, 8]
 	maxHP = stats[0]; maxSP = stats[1]
@@ -92,3 +94,4 @@ func use(skill, target: Entity): # skill is of type Spell or Item
 		skill.apply_effect(target)
 	else:
 		print("Error: Selected action is neither Spell nor Item")
+	target.health_bar.health = target.getHP()

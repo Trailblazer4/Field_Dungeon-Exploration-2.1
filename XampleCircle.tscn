@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://dqg5d74fjs6pd"]
+[gd_scene load_steps=3 format=3 uid="uid://b3cyhjxeiuiay"]
 
 [ext_resource type="Shader" path="res://center_glow.gdshader" id="1_ductm"]
 
@@ -6,11 +6,15 @@
 shader = ExtResource("1_ductm")
 shader_parameter/offset_x = 0.13
 shader_parameter/offset_y = 0.25
+shader_parameter/stretch_x = 1.5
+shader_parameter/stretch_y = 0.5
 shader_parameter/brightness = 1.1
+shader_parameter/redness = 1.0
+shader_parameter/whiteness = 1.8
 
 [node name="Polygon2D" type="Polygon2D"]
 material = SubResource("ShaderMaterial_xf5mb")
 position = Vector2(-44, 466)
 scale = Vector2(10.9259, 10.7358)
 color = Color(1, 0, 0, 1)
-polygon = PackedVector2Array(0, -101, 15, -98, 26, -95, 37, -88, 45, -78, 52, -66, 55, -56, 56.0463, -47.1069, 57, -39, 55.6543, -34.2901, 53, -25, 50, -11, 43, -1, 35, 2, 25, 4, 15, 5, 0, 5, -16, 5, -27, 1, -37, -4, -47, -14, -49, -26, -51, -42, -48, -56, -41, -68, -37, -79, -30, -90, -20, -95)
+polygon = PackedVector2Array(-0.366103, -100.132, 15, -98, 26, -95, 37, -88, 45, -78, 52, -66, 55, -56, 56.0463, -47.1069, 57, -39, 56.9289, -31.5766, 54.8239, -22.7277, 51.0713, -9.78036, 45.2137, -1.58349, 35.5119, 3.16697, 25.2611, 4.47102, 15.2848, 5.96136, -1.83051, 7.4517, -16, 5, -27, 1, -37, -4, -45.5798, -13.4131, -49, -26, -50.9798, -42.1953, -48, -56, -43.2916, -70.2323, -38.8984, -80.5715, -30, -90, -20, -95)

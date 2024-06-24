@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://bdnocodtqbljo"]
+
+[ext_resource type="Shader" path="res://highlight.gdshader" id="1_j1iat"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6aght"]
+shader = ExtResource("1_j1iat")
+shader_parameter/color = Color(0.8, 0.815686, 0.027451, 1)
+shader_parameter/speed = 4.1
+shader_parameter/max_color = 0.4
+
+[node name="Label" type="Label"]
+material = SubResource("ShaderMaterial_6aght")
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Vash"

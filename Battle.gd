@@ -6,6 +6,13 @@ var q: Array[bool] = [true, false, false, false, false]
 func transition(i: int, j: int):
 	q[i] = false
 	q[j] = true
+	if i == 4:
+		cursorIcon.visible = false
+	if j == 4:
+		cursorIcon.visible = true
+		if((i == 3) or (chosenMove is Spell and chosenMove.element == GameData.Element.HEAL)):
+			set_target(-cursor)
+	print(cursor)
 
 @onready var battleCamera = $"Camera2D"
 var enemies = []
@@ -21,14 +28,26 @@ func _ready():
 			$Party.get_child(i).add_child(GameData.removeFromParty(i))
 			
 			turnOrder.append($Party.get_child(i))
-			$Party.get_child(i).get_child(0).face_left()
-			$Party.get_child(i).get_child(0).updateCounter(true)
+			var pm = $Party.get_child(i).get_child(0)
+			pm.face_left()
+			pm.updateCounter(true)
+			
+			get_node("Battle HUD/Name%d" % i).text = pm.myName
+			pm.health_bar = get_node("Battle HUD/HealthBars/HealthBar%d" % i)
+			pm.health_bar.visible = true
+			pm.health_bar.init_health(pm.getMaxHP()) # set up health bar with Max HP
+			pm.health_bar.health = pm.getHP() # set current HP to health bar value
 	generateEnemies()
 	for e: Entity in turnOrder:
 		e.get_child(0).updateCounter()
 	
 	target = enemies[0].get_child(0)
-	handle_shader()
+	#handle_shader()
+	cursorIcon = Sprite2D.new(); cursorIcon.texture = load("res://images/Cursor.png")
+	cursorIcon.scale = Vector2(0.6, 0.6)
+	cursorIcon.position = Vector2(-25, -5)
+	target.add_child(cursorIcon)
+	cursorIcon.visible = false
 
 
 var decided: bool = false # was a decision made in this turn yet?
@@ -42,6 +61,12 @@ func _process(delta):
 			turnSet = true
 			$"Battle HUD/MagicMenu".makeMagic(thisTurn.get_child(0).moveset)
 			$"Battle HUD/ItemsMenu".makeItems(GameData.inventory)
+			for name in $"Battle HUD".get_children():
+				if name is Label:
+					if name.text == thisTurn.get_child(0).myName:
+						name.material.shader = highlight_shader
+					else:
+						name.material.shader = null
 			print("thisTurn set")
 	else:
 		thisTurn = null
@@ -155,6 +180,7 @@ func itemScreen(): # q[3]
 
 
 var cursor = 4 # 4 represents enemy 0 in "enemies"
+var cursorIcon
 var target # set to BattleParticipants.get_child(index).get_child(0), meaning it is a character rather than a slot
 var target_original_shader
 var highlight_shader = load("res://highlight.gdshader")
@@ -198,7 +224,8 @@ func chooseScreen(): # q[4], called when ready to use an attack, skill, or item 
 
 
 func set_target(move_amount: int):
-	target.get_node("Sprite2D").material.shader = target_original_shader
+	#target.get_node("Sprite2D").material.shader = target_original_shader
+	target.remove_child(cursorIcon)
 
 	cursor += move_amount
 	if cursor < 0:
@@ -212,14 +239,15 @@ func set_target(move_amount: int):
 	else:
 		target = enemies[cursor - 4].get_child(0)
 
-	handle_shader()
+	target.add_child(cursorIcon)
+	#handle_shader()
 
 
-func handle_shader():
-	if !target.get_node("Sprite2D").material:
-		target.get_node("Sprite2D").material = ShaderMaterial.new()
-	target_original_shader = target.get_node("Sprite2D").material.shader
-	target.get_node("Sprite2D").material.shader = highlight_shader
+#func handle_shader():
+	#if !target.get_node("Sprite2D").material:
+		#target.get_node("Sprite2D").material = ShaderMaterial.new()
+	#target_original_shader = target.get_node("Sprite2D").material.shader
+	#target.get_node("Sprite2D").material.shader = highlight_shader
 
 
 # func battleOver():
@@ -242,7 +270,7 @@ func party_get(index: int):
 		return -1
 	return $Party.get_child(index)
 
-
+var hb_data = load("res://health_bar.tscn")
 func generateEnemies():
 	# get location info for battle, run calculations for number of enemies and which enemies to instance
 	
@@ -262,6 +290,16 @@ func generateEnemies():
 			turnOrder.append(enemyContainer)
 
 			place_position(enemyContainer, len(enemies) - 1)
+			
+			var hb = hb_data.instantiate()
+			enemy.add_child(hb)
+			enemy.health_bar = hb
+			hb.position.x -= 25
+			hb.position.y -= 35
+			hb.scale *= 0.3
+			hb.init_health(enemy.getMaxHP())
+			hb.health = enemy.getHP()
+			hb.get_node("Label1").visible = false; hb.get_node("Label2").visible = false; hb.get_node("Label3").visible = false;
 		i += 1
 
 

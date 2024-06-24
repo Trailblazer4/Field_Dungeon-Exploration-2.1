@@ -3,8 +3,8 @@ uniform float offset_x: hint_range(0.0, 1.0, 0.01) = 0.12;
 uniform float offset_y: hint_range(0.0, 1.0, 0.01) = 0.5;
 uniform float stretch_x: hint_range(0.0, 2.0, 0.01) = 1.5;
 uniform float stretch_y: hint_range(0.0, 2.0, 0.01) = 0.5; // 0.31
-uniform float brightness: hint_range(0.1, 10.0, 0.01) = 5.16;
-uniform float redness: hint_range(0.1, 1.0, 0.01) = 0.86;
+uniform float brightness: hint_range(0.1, 10.0, 0.01) = 4.16;
+uniform float redness: hint_range(0.1, 1.0, 0.01) = 1.0;
 uniform float whiteness: hint_range(0.1, 3.0, 0.01) = 1.8;
 
 void fragment() {
