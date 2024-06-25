@@ -1,0 +1,23 @@
+[gd_scene load_steps=2 format=3 uid="uid://dhs3bwej8wvx4"]
+
+[ext_resource type="FontFile" uid="uid://ddqfk4sjejx7w" path="res://images/Retro Gaming.ttf" id="1_lsfv7"]
+
+[node name="BattlePrompt" type="Node2D"]
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_right = 619.0
+offset_bottom = 229.0
+color = Color(0.858824, 0.615686, 0.631373, 1)
+
+[node name="Label" type="Label" parent="ColorRect"]
+layout_mode = 0
+offset_left = 27.0
+offset_top = 35.0
+offset_right = 365.0
+offset_bottom = 63.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("1_lsfv7")
+theme_override_font_sizes/font_size = 24
+text = "Fei used Ar!"

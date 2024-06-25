@@ -15,5 +15,6 @@ func _on_party_1_history_updated(position_history):
 	if (position_history.size() < tracking_index + 1):
 		return
 	var past_position = position_history[tracking_index]
-	velocity = position.direction_to(Vector2(past_position["x"], past_position["y"])) * past_position["Speed"]
+	direction = position.direction_to(Vector2(past_position["x"], past_position["y"]))
+	velocity = direction * past_position["Speed"]
 	move_and_slide()

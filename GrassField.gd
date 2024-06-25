@@ -1,6 +1,6 @@
 extends Node2D
 
-var nextLevel = load("res://Dungeon.tscn") # or preload, either seems to work fine
+#var nextLevel = load("res://Dungeon.tscn") # or preload, either seems to work fine
 var loadChest = load("res://Chest.tscn")
 
 var fadeout = false
@@ -39,7 +39,6 @@ func _ready():
 	addChests()
 	print(GameData.locationInfo)
 	
-	print(GameData.locationInfo)
 	$Fade/AnimationPlayer.play("fadein")
 
 
@@ -47,7 +46,7 @@ func _process(delta):
 	if Input.is_key_pressed(KEY_M):
 		emptyPositionData()
 		remove_child(GameData.party) # remove party so it doesn't get queue_free()'d
-		get_tree().change_scene_to_packed(nextLevel)
+		get_tree().change_scene_to_packed(GameData.Levels[1])
 	
 	if Input.is_action_just_pressed("start_battle"):
 		$Fade/AnimationPlayer.play("battle_fade")

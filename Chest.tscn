@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://du082do4cbcmt"]
+[gd_scene load_steps=5 format=3 uid="uid://djmlkes72vnar"]
 
 [ext_resource type="Script" path="res://Chest.gd" id="1_70ct6"]
 [ext_resource type="Texture2D" uid="uid://b51xtxabskhtj" path="res://images/Chest.png" id="2_hucxk"]
@@ -28,3 +28,8 @@ collision_layer = 8
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource("RectangleShape2D_25cs6")
+
+[node name="Timer" type="Timer" parent="."]
+one_shot = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

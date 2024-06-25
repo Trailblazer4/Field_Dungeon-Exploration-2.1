@@ -983,6 +983,7 @@ offset_left = -88.0
 offset_top = -33.0
 offset_right = 1229.0
 offset_bottom = 675.0
+color = Color(0, 0, 0, 1)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Fade"]
 libraries = {

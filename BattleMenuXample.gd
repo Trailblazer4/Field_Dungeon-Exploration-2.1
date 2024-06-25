@@ -57,6 +57,7 @@ func makeMagic(spellList: Array[Spell]):
 
 
 func makeItems(itemsList: Array):
+	spells = itemsList
 	for thing in $VBoxContainer.get_children():
 		$VBoxContainer.remove_child(thing)
 		thing.queue_free()

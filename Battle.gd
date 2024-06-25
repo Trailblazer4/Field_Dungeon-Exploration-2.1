@@ -95,11 +95,24 @@ func _process(delta):
 				await thisTurn.get_child(0).use(chosenMove, target)
 				if target.getHP() <= 0:
 					target.setHP(0)
-					target.visible = false
+					#target.visible = false
 				elif target.getHP() > target.getMaxHP():
 					target.setHP(target.getMaxHP())
 
 				print(target.myName, ": ",target.getHP(),"/",target.getMaxHP())
+				if target.getHP() == 0:
+					if target.get_parent() in $Enemies.get_children():
+						var deadEnemy = target
+						set_target(-cursor)
+						turnOrder.erase(deadEnemy.get_parent())
+						enemies.erase(deadEnemy.get_parent())
+						deadEnemy.get_parent().queue_free()
+						#turnOrder[0].get_child(0).add_child(cursorIcon)
+						#cursor = 0
+						#target = turnOrder[0].get_child(0)
+					else:
+						# set party member sprite to "dead", on floor
+						pass
 				set_target(4 - cursor) # reset cursor after processing skill usage
 				decided = true
 		

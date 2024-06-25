@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://dwdbl3ct4tar"]
+[gd_scene load_steps=5 format=3 uid="uid://tv8tl44rl5xl"]
 
 [ext_resource type="Script" path="res://Party1.gd" id="1_1a77s"]
 [ext_resource type="Script" path="res://Party2.gd" id="2_0dg52"]

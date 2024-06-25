@@ -2,7 +2,7 @@ extends Node
 
 var ALL_PLAYABLE_CHARACTERS = [] # holds all references to all (playable) characters in the game
 var party = load("res://Party.tscn").instantiate() # initial creation of the party container
-var collision_objects = [] # bookkeeping for collision objects (might delete later)
+#var collision_objects = [] # bookkeeping for collision objects (might delete later)
 var partyCamera = Camera2D.new() # the camera focused on Party1 (leader of party, controlled by player)
 var locationInfo: LocationInfo
 
@@ -13,6 +13,8 @@ var link = load("res://PlayableCharacters/Link.tscn").instantiate()
 var fei = load("res://PlayableCharacters/Fei.tscn").instantiate()
 var rockman = load("res://PlayableCharacters/Mega Man.tscn").instantiate()
 var atom = load("res://PlayableCharacters/Atom.tscn").instantiate()
+var zero = load("res://PlayableCharacters/Zero.tscn").instantiate()
+var clodsire = load("res://PlayableCharacters/Clodsire.tscn").instantiate()
 
 # define status functions here followed by creating a list of funcrefs
 func burn():
@@ -37,6 +39,15 @@ var SpellLibrary: Dictionary = {
 }
 
 
+# normally we would use strings to reference areas here, and create load() variables based on those strings
+# when loading in an adjacent area in necessary
+# for the purposes of this small project, we will just load all game assets from the get-go
+var Levels = [
+	load("res://GrassField.tscn"),
+	load("res://Dungeon.tscn"),
+]
+
+
 # chests dictionary. Each key is a location name (obtained from current_scene.locationInfo.locationName)
 # referencing a list of chests in that location
 # each chest is a list of attributes: an item (object of type Item), a boolean tracking whether the chest
@@ -46,7 +57,7 @@ var SpellLibrary: Dictionary = {
 # be added to a level whenever
 var chests = {
 	"Grass Field": [
-		["Item Object", true, Vector2(250, 300)],
+		["Bomb", false, Vector2(250, 300)],
 		["Ultra Potion", false, Vector2(400, 375)],
 		["Cookie", false, Vector2(500, 500)],
 		["Elixir", false, Vector2(800, 600)],
@@ -64,12 +75,13 @@ var chests = {
 var inventory = [
 	[load("res://ItemLibrary/Elixir.tscn").instantiate(), 99],
 ]
-func add_to_inventory(item_title: String):
+func add_to_inventory(i: Item):
 	for item in inventory:
-		if item[0].title == item_title:
+		if item[0].title == i.title:
 			item[1] += 1
+			i.queue_free()
 			return
-	inventory.append([load("res://ItemLibrary/%s.tscn" % item_title).instantiate(), 1]) # items are only instantiated once in memory
+	inventory.append([i, 1]) # items are only instantiated once in memory
 																		  # paired with a counter
 
 
@@ -137,6 +149,8 @@ func _ready():
 	ALL_PLAYABLE_CHARACTERS.append(fei)
 	ALL_PLAYABLE_CHARACTERS.append(rockman)
 	ALL_PLAYABLE_CHARACTERS.append(atom)
+	ALL_PLAYABLE_CHARACTERS.append(zero)
+	ALL_PLAYABLE_CHARACTERS.append(clodsire)
 	print(ALL_PLAYABLE_CHARACTERS[-1])
 
 	# put characters in the party
@@ -152,12 +166,11 @@ func _ready():
 	#party.get_child(2).add_child(link)
 	#collision_objects.append(link.get_child(1))
 	#print(party.get_child(-2).get_child(0)) # negative index works with get_child, too!
-	addToParty(atom, 0)
-	addToParty(rockman, 1)
-	addToParty(link, 2)
-	addToParty(fei, 3)
-	swapParty(0, 1)
-	swapParty(1, 3)
+	
+	#addToParty(zero, 0)
+	#addToParty(rockman, 1)
+	#addToParty(link, 2)
+	#addToParty(clodsire, 3)
 
 	#swapParty(0, 2)
 	#removeFromParty(1)
@@ -278,7 +291,7 @@ func addToParty(e: Entity, index: int):
 		return
 	party.get_child(index).add_child(e)
 	var co = e.get_child(1) # collision object
-	collision_objects.append(co)
+	#collision_objects.append(co)
 	e.remove_child(co)
 	party.get_child(index).add_child(co)
 	if index == 0:

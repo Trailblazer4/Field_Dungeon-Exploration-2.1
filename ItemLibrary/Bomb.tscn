@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://bkfhbn8hoxylv"]
+
+[ext_resource type="Script" path="res://ItemLibrary/Bomb.gd" id="1_d37i4"]
+[ext_resource type="Texture2D" uid="uid://lt1pbsw5nii2" path="res://images/bomb_sprite.png" id="2_0b7r6"]
+
+[node name="Bomb" type="Node2D"]
+script = ExtResource("1_d37i4")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_0b7r6")

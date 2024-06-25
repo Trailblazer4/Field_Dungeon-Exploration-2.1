@@ -87,11 +87,13 @@ func use(skill, target: Entity): # skill is of type Spell or Item
 			target.setHP(target.getHP() + totalDmg)
 		else:
 			target.setHP(target.getHP() - (totalDmg - target.getMgDf()))
-		
-		if target.getHP() < 0:
-			target.setHP(0)
 	elif skill is Item:
 		skill.apply_effect(target)
 	else:
 		print("Error: Selected action is neither Spell nor Item")
+
+	if target.getHP() < 0:
+		target.setHP(0)
+	if target.getHP() > target.getMaxHP():
+		target.setHP(target.getMaxHP())
 	target.health_bar.health = target.getHP()
