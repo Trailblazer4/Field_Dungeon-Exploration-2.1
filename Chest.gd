@@ -3,7 +3,7 @@ extends StaticBody2D
 var chestNum: int
 var place: String
 #@onready var chest_item_data = load("res://ItemLibrary/%s.tscn" % GameData.chests[place][chestNum][0])
-
+#hello
 func _process(delta):
 	if Input.is_key_pressed(KEY_K) and GameData.party.get_child(0) in $Area2D.get_overlapping_bodies():
 		open()
