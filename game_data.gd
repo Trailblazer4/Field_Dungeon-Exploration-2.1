@@ -129,9 +129,9 @@ enum Element{
 
 #var tf = ["Crimson", "Celeste", "Lyra", "Dante"]
 func _ready():
-	var chars = ["Rock", "Proto", "X", "Zero"]
-	chars.insert(2, "Roll")
-	print(chars)
+	#var chars = ["Rock", "Proto", "X", "Zero"]
+	#chars.insert(2, "Roll")
+	#print(chars)
 	
 	#party.move_child(party.get_child(0), 2)
 	#print(party.get_children())
@@ -151,20 +151,12 @@ func _ready():
 	ALL_PLAYABLE_CHARACTERS.append(atom)
 	ALL_PLAYABLE_CHARACTERS.append(zero)
 	ALL_PLAYABLE_CHARACTERS.append(clodsire)
-	print(ALL_PLAYABLE_CHARACTERS[-1])
 
 	# put characters in the party
-	#party.get_child(0).add_child(cinnamoroll)
-	#collision_objects.append(cinnamoroll.get_child(1))
-	## when a character is added to the party, store a reference to their collision object in collision_objects
 	## then, we will remove them from their parent and place them as a child of the party slot instead
 	## when the character is removed from the party, move their collision object back under them before removing
 	## move it back under them when swapping party placements as well
 	## if the character swings a weapon it should be fine as the weapon will have its own collision shape
-	#party.get_child(1).add_child(misty)
-	#collision_objects.append(misty.get_child(1))
-	#party.get_child(2).add_child(link)
-	#collision_objects.append(link.get_child(1))
 	#print(party.get_child(-2).get_child(0)) # negative index works with get_child, too!
 	
 	#addToParty(zero, 0)
@@ -174,16 +166,6 @@ func _ready():
 
 	#swapParty(0, 2)
 	#removeFromParty(1)
-	var a = 32; var b = 255
-	a = a ^ b
-	b = a ^ b
-	a = a ^ b
-	print("a: ", a, ", b: ", b)
-	#swapParty(0, 2)
-
-	#for pm in party.get_children():
-		#pm.set_collision_layer(0b1)
-		#pm.set_collision_mask(0b1100)
 
 	for i in range(number_of_states):
 		q.append(false)

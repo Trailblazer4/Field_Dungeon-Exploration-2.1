@@ -3,7 +3,7 @@
 [ext_resource type="Shader" path="res://center_glow.gdshader" id="1_11g86"]
 [ext_resource type="Texture2D" uid="uid://ii5o4v7cfxl3" path="res://images/Ard.png" id="2_7r2to"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_j65no"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ng3rd"]
 shader = ExtResource("1_11g86")
 shader_parameter/offset_x = 0.12
 shader_parameter/offset_y = 0.5
@@ -14,6 +14,6 @@ shader_parameter/redness = 1.0
 shader_parameter/whiteness = 1.8
 
 [node name="Ard" type="Sprite2D"]
-material = SubResource("ShaderMaterial_j65no")
+material = SubResource("ShaderMaterial_ng3rd")
 texture = ExtResource("2_7r2to")
 hframes = 2
