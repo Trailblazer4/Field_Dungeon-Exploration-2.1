@@ -66,8 +66,8 @@ var current_scene = null
 
 var SpellLibrary: Dictionary = {
 	"Punch": Spell.new("Punch", Element.VOID, 10, 0),
-	"Ar": Spell.new("Ar", Element.FIRE, 20, 20),
-	"Au": Spell.new("Au", Element.ICE, 20, 20),
+	"Ar": Spell.new("Ar", Element.FIRE, 20, 20, [StatusDictionary["Burn"],]),
+	"Au": Spell.new("Au", Element.ICE, 20, 20, [StatusDictionary["Freeze"],]),
 	"Re": Spell.new("Re", Element.HEAL, 20, 20),
 	"Reli": Spell.new("Reli", Element.HEAL, 40, 30),
 	"Temp": Spell.new("Temp", Element.WIND, 40, 30),

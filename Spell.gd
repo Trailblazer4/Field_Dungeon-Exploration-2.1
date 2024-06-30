@@ -6,13 +6,14 @@ var title: String
 var element: GameData.Element
 var power: int
 var spReq: int
-#var effects = []
+var status_effects: Array[Callable] = []
 
-func _init(t: String, e: GameData.Element, p: int, spr: int):
+func _init(t: String, e: GameData.Element, p: int, spr: int, se: Array[Callable] = []):
 	title = t
 	element = e
 	power = p
 	spReq = spr
+	status_effects = se
 #
 #func _ready():
 	#pass # Replace with function body.
