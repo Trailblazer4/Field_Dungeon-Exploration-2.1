@@ -10,6 +10,7 @@ var myName: String
 var speedCounter: int
 var moveset: Array[Spell] = []
 @onready var basic_attack: Spell = GameData.SpellLibrary["Punch"]
+var status_effects: Array[Callable] = []
 var defending: bool = false
 
 var health_bar

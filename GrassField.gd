@@ -6,6 +6,10 @@ var loadChest = load("res://Chest.tscn")
 var fadeout = false
 
 func _ready():
+	#var burn = Callable(GameData, "burn")
+	#GameData.ALL_PLAYABLE_CHARACTERS[2].status_effects.append(burn)
+	#GameData.ALL_PLAYABLE_CHARACTERS[2].status_effects[0].call(GameData.ALL_PLAYABLE_CHARACTERS[2])
+	GameData.StatusDictionary["Sick"].call(GameData.ALL_PLAYABLE_CHARACTERS[0])
 	GameData.current_scene = self
 	PauseMenu.current_scene = self
 	var elixir: Item = load("res://ItemLibrary/Elixir.tscn").instantiate()

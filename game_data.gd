@@ -17,9 +17,46 @@ var zero = load("res://PlayableCharacters/Zero.tscn").instantiate()
 var clodsire = load("res://PlayableCharacters/Clodsire.tscn").instantiate()
 
 # define status functions here followed by creating a list of funcrefs
-func burn():
+func burn(e: Entity):
 	# what burn does, damage over time to HP
-	pass
+	print(e.myName, " got burned!")
+
+func freeze(e: Entity):
+	print(e.myName, " froze!")
+
+var call_to_burn = Callable(self, "burn")
+
+# when an Entity is hit with an attack, you can first check whether any of their existing status_effects have an interaction with the move
+# (for status in status_effects: status.call(self, 3, move)), then run a chance on the attacking move to see whether a new status is added
+var StatusDictionary: Dictionary = {
+	"Burn": call_to_burn,
+
+	"Freeze": Callable(self, "freeze"),
+
+	"Sick": func(e: Entity):
+		print(e.myName, " got sick!"),
+
+	"Grounded": func(e: Entity, effect: int, move = null):
+		match effect:
+			0: # called right when effect added to Entity, status_effects[i].call(self, 0)
+				print(e.myName, " def cut in half!")
+			1: # called right when effect popped from Entity, status_effects[i].call(self, 1)
+				print(e.myName, " def back to normal.")
+			#2: # called at the end of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
+			3: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
+				var effect_activated = false
+				# possible for a Spell to have multiple elements, so check for all of them.
+				if move.element == Element.FIRE:
+					print("x1.3 damage from ", move.title, "!")
+					effect_activated = true
+				if move.element == Element.LIGHTNING:
+					print(move.title, " negated! x0 damage.")
+					effect_activated = true
+				if effect_activated:
+					pass # pop this status effect from Entity.status_effects
+			_: # default
+				pass
+}
 
 # var statusRefs = [FuncRef("burn")]
 
