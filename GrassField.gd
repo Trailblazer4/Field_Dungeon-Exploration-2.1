@@ -6,6 +6,11 @@ var loadChest = load("res://Chest.tscn")
 var fadeout = false
 
 func _ready():
+	var cin = GameData.party.get_child(0).get_child(0)
+	cin.multAtk(1.5)
+	cin.addAtk(10)
+	print(cin.getAtk())
+	
 	#var burn = Callable(GameData, "burn")
 	#GameData.ALL_PLAYABLE_CHARACTERS[2].status_effects.append(burn)
 	#GameData.ALL_PLAYABLE_CHARACTERS[2].status_effects[0].call(GameData.ALL_PLAYABLE_CHARACTERS[2])

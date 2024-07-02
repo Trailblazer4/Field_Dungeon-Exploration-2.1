@@ -158,5 +158,6 @@ offset_right = 537.0
 offset_bottom = -80.0
 
 [node name="BattlePrompt" parent="Battle HUD" instance=ExtResource("10_2o6qr")]
+visible = false
 position = Vector2(-286, 117)
 scale = Vector2(0.8, 0.8)

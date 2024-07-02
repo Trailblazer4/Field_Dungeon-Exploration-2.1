@@ -17,48 +17,190 @@ var zero = load("res://PlayableCharacters/Zero.tscn").instantiate()
 var clodsire = load("res://PlayableCharacters/Clodsire.tscn").instantiate()
 
 # define status functions here followed by creating a list of funcrefs
-func burn(e: Entity):
-	# what burn does, damage over time to HP
-	print(e.myName, " got burned!")
+func burn(e: Entity, effect: int, move = null):
+	match effect:
+		0: # called right when effect added to Entity, status_effects[i].call(self, 0)
+			print(e.myName, " was burned!")
+			print(e.myName, " mgdf cut in half!")
+			e.multMgDf(0.5)
+		1: # called right when effect popped from Entity, status_effects[i].call(self, 1)
+			print(e.myName, " is no longer burned!")
+			print(e.myName, " mgdf back to normal.")
+			e.multMgDf(2.0)
+		#2: # called at the start of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
+		3: # called at the end of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
+			e.setHP(e.getHP() - (e.getMaxHP() / 16)) # burn effect
+			e.health_bar.health = e.getHP()
+		4: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
+			var effect_activated = [false]
+			# possible for a Spell to have multiple elements, so check for all of them.
+			if move.element == Element.WIND:
+				print("x1.3 damage from ", move.title, "!")
+				effect_activated = [true, 1.3, 1.6]
+			return effect_activated # when calling these functions, for status in status_effects:
+																	# var status_result = status.call(e, 4, move)
+																	# if status_result[0]:
+																	# 	status.call(e, 1) # to remove effect
+																	#	e.status_effects.erase(status)
+																	#	if status_result[1] is float:
+																	#		dmg_mod *= status_result[1] # dmg_mod will be a float in Entity.use(),
+																	#									  initialized to 1.0
+																	#		chance *= status_result[2] # chance will be a float for the chance
+																	#									of a move's status to land, initially set
+																	#									to move's accuracy
+																	#	else:
+																	#		e.status_effects.append(status_result[1])
+		_: # default
+			pass
+	return [false] # effect_activated is never set to true
 
-func freeze(e: Entity):
-	print(e.myName, " froze!")
+func freeze(e: Entity, effect: int, move = null):
+	match effect:
+		0: # called right when effect added to Entity, status_effects[i].call(self, 0)
+			print(e.myName, " was frozen!")
+			print(e.myName, " spd cut in half!")
+			e.multSpd(0.5)
+		1: # called right when effect popped from Entity, status_effects[i].call(self, 1)
+			print(e.myName, " is no longer frozen!")
+			print(e.myName, " spd back to normal.")
+			e.multSpd(2.0)
+		4: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
+			var effect_activated = [false]
+			if move.element == Element.EARTH:
+				print("x1.3 damage from ", move.title, "!")
+				effect_activated = [true, 1.3]
+			if move.element == Element.FIRE:
+				effect_activated = [true, StatusDictionary["Wet"]]
+			return effect_activated
+		_: # default
+			pass
+	return [false] # effect_activated was never set to true
 
-var call_to_burn = Callable(self, "burn")
+func sick(e: Entity, effect: int, move = null):
+	match effect:
+		0: # called right when effect added to Entity, status_effects[i].call(self, 0)
+			print(e.myName, " was grounded!")
+			print(e.myName, " def cut in half!")
+		1: # called right when effect popped from Entity, status_effects[i].call(self, 1)
+			print(e.myName, " is no longer grounded!")
+			print(e.myName, " def back to normal.")
+		4: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
+			return [true, 1.0, 1.8] # dmg_mod stays the same, chance gets higher for a new status to land
+		_: # default
+			pass
+	return [false]
+
+func grounded(e: Entity, effect: int, move = null):
+	match effect:
+		0: # called right when effect added to Entity, status_effects[i].call(self, 0)
+			print(e.myName, " was grounded!")
+			print(e.myName, " def cut in half!")
+		1: # called right when effect popped from Entity, status_effects[i].call(self, 1)
+			print(e.myName, " is no longer grounded!")
+			print(e.myName, " def back to normal.")
+		#2: # called at the start of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
+		#3: # called at the end of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
+		4: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
+			var effect_activated = false
+			# possible for a Spell to have multiple elements, so check for all of them.
+			if move.element == Element.FIRE:
+				print("x1.3 damage from ", move.title, "!")
+				effect_activated = true
+			if move.element == Element.LIGHTNING:
+				print(move.title, " negated! x0 damage.")
+				effect_activated = true
+			if effect_activated:
+				pass # pop this status effect from Entity.status_effects
+		_: # default
+			pass
+
+func wet(e: Entity, effect: int, move = null):
+	match effect:
+		0: # called right when effect added to Entity, status_effects[i].call(self, 0)
+			print(e.myName, " was grounded!")
+			print(e.myName, " def cut in half!")
+		1: # called right when effect popped from Entity, status_effects[i].call(self, 1)
+			print(e.myName, " is no longer grounded!")
+			print(e.myName, " def back to normal.")
+		#2: # called at the start of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
+		#3: # called at the end of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
+		4: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
+			var effect_activated = false
+			# possible for a Spell to have multiple elements, so check for all of them.
+			if move.element == Element.FIRE:
+				print("x1.3 damage from ", move.title, "!")
+				effect_activated = true
+			if move.element == Element.LIGHTNING:
+				print(move.title, " negated! x0 damage.")
+				effect_activated = true
+			if effect_activated:
+				pass # pop this status effect from Entity.status_effects
+		_: # default
+			pass
+
+func steam(e: Entity, effect: int, move = null):
+	match effect:
+		0: # called right when effect added to Entity, status_effects[i].call(self, 0)
+			print(e.myName, " was grounded!")
+			print(e.myName, " def cut in half!")
+		1: # called right when effect popped from Entity, status_effects[i].call(self, 1)
+			print(e.myName, " is no longer grounded!")
+			print(e.myName, " def back to normal.")
+		#2: # called at the start of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
+		#3: # called at the end of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
+		4: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
+			var effect_activated = false
+			# possible for a Spell to have multiple elements, so check for all of them.
+			if move.element == Element.FIRE:
+				print("x1.3 damage from ", move.title, "!")
+				effect_activated = true
+			if move.element == Element.LIGHTNING:
+				print(move.title, " negated! x0 damage.")
+				effect_activated = true
+			if effect_activated:
+				pass # pop this status effect from Entity.status_effects
+		_: # default
+			pass
+
+func zapped(e: Entity, effect: int, move = null):
+	match effect:
+		0: # called right when effect added to Entity, status_effects[i].call(self, 0)
+			print(e.myName, " was grounded!")
+			print(e.myName, " def cut in half!")
+		1: # called right when effect popped from Entity, status_effects[i].call(self, 1)
+			print(e.myName, " is no longer grounded!")
+			print(e.myName, " def back to normal.")
+		#2: # called at the start of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
+		#3: # called at the end of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
+		4: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
+			var effect_activated = false
+			# possible for a Spell to have multiple elements, so check for all of them.
+			if move.element == Element.FIRE:
+				print("x1.3 damage from ", move.title, "!")
+				effect_activated = true
+			if move.element == Element.LIGHTNING:
+				print(move.title, " negated! x0 damage.")
+				effect_activated = true
+			if effect_activated:
+				pass # pop this status effect from Entity.status_effects
+		_: # default
+			pass
+
 
 # when an Entity is hit with an attack, you can first check whether any of their existing status_effects have an interaction with the move
 # (for status in status_effects: status.call(self, 3, move)), then run a chance on the attacking move to see whether a new status is added
+
+
 var StatusDictionary: Dictionary = {
-	"Burn": call_to_burn,
-
+	"Burn": Callable(self, "burn"),
 	"Freeze": Callable(self, "freeze"),
-
-	"Sick": func(e: Entity):
-		print(e.myName, " got sick!"),
-
-	"Grounded": func(e: Entity, effect: int, move = null):
-		match effect:
-			0: # called right when effect added to Entity, status_effects[i].call(self, 0)
-				print(e.myName, " def cut in half!")
-			1: # called right when effect popped from Entity, status_effects[i].call(self, 1)
-				print(e.myName, " def back to normal.")
-			#2: # called at the end of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
-			3: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
-				var effect_activated = false
-				# possible for a Spell to have multiple elements, so check for all of them.
-				if move.element == Element.FIRE:
-					print("x1.3 damage from ", move.title, "!")
-					effect_activated = true
-				if move.element == Element.LIGHTNING:
-					print(move.title, " negated! x0 damage.")
-					effect_activated = true
-				if effect_activated:
-					pass # pop this status effect from Entity.status_effects
-			_: # default
-				pass
+	"Sick": Callable(self, "sick"),
+	"Grounded": Callable(self, "grounded"),
+	"Wet": Callable(self, "wet"),
+	"Steam": Callable(self, "steam"),
+	"Zapped": Callable(self, "zapped"),
 }
 
-# var statusRefs = [FuncRef("burn")]
 
 # reference the current scene of the game. update this in the _ready() function of each level in the game
 var current_scene = null
