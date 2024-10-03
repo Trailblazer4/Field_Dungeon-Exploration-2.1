@@ -4,6 +4,9 @@ extends Entity
 func _init():
 	super()
 	myName = "Link"
+	prefs["weapons"].append(Equipment.weapons.BROADSWORD)
+	prefs["armors"].append(Equipment.armors.LIGHT)
+	prefs["armors"].append(Equipment.armors.HEAVY)
 
 
 # Called when the node enters the scene tree for the first time.

@@ -61,6 +61,7 @@ horizontal_alignment = 2
 
 [node name="Label2" type="Label" parent="."]
 z_index = 2
+layout_mode = 0
 offset_left = 70.0
 offset_top = 12.0
 offset_right = 75.0
@@ -73,6 +74,7 @@ horizontal_alignment = 1
 
 [node name="Label3" type="Label" parent="."]
 z_index = 2
+layout_mode = 0
 offset_left = 80.0
 offset_top = 12.0
 offset_right = 136.0
@@ -81,5 +83,19 @@ scale = Vector2(0.05, 0.05)
 theme_override_colors/font_color = Color(0.92549, 0.921569, 0.909804, 1)
 theme_override_font_sizes/font_size = 240
 text = "9999"
+
+[node name="StatusIconList" type="HBoxContainer" parent="."]
+layout_direction = 3
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -6.02297
+anchor_top = -0.0740741
+anchor_right = 3.73378
+anchor_bottom = 0.637037
+offset_left = -336.6
+offset_right = 55.4
+offset_bottom = 108.8
+scale = Vector2(0.25, 0.25)
+metadata/_edit_use_anchors_ = true
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://cl2rd7e5vhk22"]
+
+[ext_resource type="Script" path="res://Exit.gd" id="1_wdpsy"]
+
+[node name="Exit" type="Area2D"]
+script = ExtResource("1_wdpsy")
+entryPoint = Vector2(nan, nan)
+direction = Vector2(nan, nan)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]

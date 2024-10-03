@@ -1,5 +1,6 @@
 extends Control
 
+signal item_selection(selection, box)
 
 var bme = load("res://BattleMenuElement.tscn")
 var cursor: int = 0
@@ -31,7 +32,9 @@ var spells = [
 
 func _ready():
 	#makeMagic(spells)
-	pass
+	if get_parent().has_method("on_item_selection"):
+		item_selection.connect(get_parent().on_item_selection)
+	
 
 # i guess because of how it's set up already, i should make a function in this scene to create the magic menu
 func makeMagic(spellList: Array[Spell]):
@@ -70,12 +73,18 @@ func makeItems(itemsList: Array):
 		newLine.get_node("HSplitContainer/HSplitContainer/Name").text = itemsList[i][0].title
 		newLine.get_node("HSplitContainer/HSplitContainer/SP Req").text = "x%d" % itemsList[i][1]
 		newLine.get_node("ColorRect").color = defaultColor
+		newLine.get_node("HSplitContainer").z_index = 1
+		
+		print(itemsList[i][0].title, "\n", itemsList[i][1], "\n")
+		print(newLine.get_node("HSplitContainer/HSplitContainer/Name").text)
+		print(newLine.get_node("HSplitContainer/HSplitContainer/SP Req").text, "\n")
 		
 		if i > 8:
 			newLine.visible = false
 	cursor = 0
 	if len(itemsList) > 0:
 		$"VBoxContainer".get_child(cursor).get_node("ColorRect").color = selectColor
+
 
 func _process(delta):
 	if Input.is_action_just_pressed("up") and cursor > 0:
@@ -91,6 +100,9 @@ func _process(delta):
 			$VBoxContainer.get_child(limits[0]).visible = false
 			limits[0] += 1; limits[1] += 1
 			$VBoxContainer.get_child(limits[1]).visible = true
+	
+	if Input.is_action_just_pressed("confirm") and len(spells) > 0:
+		item_selection.emit(spells[cursor], self)
 
 
 func updateCursor(upDir: int):

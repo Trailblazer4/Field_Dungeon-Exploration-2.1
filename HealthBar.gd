@@ -9,10 +9,10 @@ var health = 0: set = set_health
 
 
 func init_health(h):
-	health = h
-	max_value = h
-	value = h
+	max_value = h # make sure to establish max values before setting values
 	dmg.max_value = h
+	health = h
+	value = h
 	dmg.value = h
 	
 	$Label1.text = str(health)
@@ -32,11 +32,23 @@ func set_health(h): # called each time health is changed
 	
 	
 func _ready():
-	init_health(100)
+	#var burn_symbol = TextureRect.new()
+	#burn_symbol.texture = load("res://images/StatusIcons/Burn Symbol.png")
+	#get_node("StatusIconList").add_child(burn_symbol)
+	#burn_symbol.expand_mode = TextureRect.EXPAND_FIT_WIDTH
+	
+	#init_health(9923)
+	#var new_node = TextureRect.new()
+	#new_node.texture = load("res://images/Chio Icon.png")
+	#new_node.name = "Burn Symbol"
+	#$StatusIconList.add_child(new_node)
+	#for node in $StatusIconList.get_children():
+		#print(node.name)
 	# initialize health to parent entity health
 	# if entity is target of a use(), then apply changes to health bar by changing health
 	# target.get_node("HealthBar").health -= damage
 	# target.get_node("HealthBar").health += heal_amount
+	pass
 
 #func _process(delta):
 	#if Input.is_action_just_pressed("confirm"):

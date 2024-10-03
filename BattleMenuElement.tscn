@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://dr6oq7t7xbab0"]
+[gd_scene format=3 uid="uid://ddde1mxiijoo1"]
 
 [node name="BattleMenuElement" type="Control"]
 custom_minimum_size = Vector2(301, 30)

@@ -4,11 +4,38 @@ extends Node2D
 @onready var cursor = 0
 @onready var cursor_icon = Sprite2D.new()
 @export var chosen_color: Color
+@export var MINIMUM_PARTY_SIZE = 4
+
 var selection = []
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	await init_screen()
 	$FadeWhite/AnimationPlayer.play("fadein")
+	
+	#GameData.party.addAt(GameData.ALL_PLAYABLE_CHARACTERS[0], 0)
+	#GameData.party.add(GameData.ALL_PLAYABLE_CHARACTERS[1])
+	#print(GameData.party.treeView() + "\n\n\n")
+	#GameData.party.remove(0)
+	#GameData.party.swap(0, 1)
+	#print(GameData.party.treeView())
+	
+	#var rem = GameData.party.remove(0)
+	#print(rem); print(rem.get_children())
+	#print(GameData.party.treeView())
+	#GameData.party.add(GameData.ALL_PLAYABLE_CHARACTERS[0])
+	#GameData.party.add(GameData.ALL_PLAYABLE_CHARACTERS[1])
+	#GameData.party.add(GameData.ALL_PLAYABLE_CHARACTERS[2])
+	#print("success" if GameData.party.add(GameData.ALL_PLAYABLE_CHARACTERS[3]) else "failure")
+	##print(GameData.party.clear())
+	##GameData.party.remove(1)
+	#print(GameData.party.treeView() + "\n\n\n")
+	#GameData.party.remove(0)
+	##GameData.party.remove(2)
+	##print("success" if GameData.party.add(GameData.ALL_PLAYABLE_CHARACTERS[4]) else "failure")
+	#print(GameData.party.viewSlots()[0].get_child(2))
+	#print(GameData.party.viewSlots()[1].get_child(1))
+	#print(GameData.party.viewMembers())
+	#print(GameData.party.treeView())
 
 func init_screen():
 	for i in range(len(GameData.ALL_PLAYABLE_CHARACTERS)):
@@ -32,10 +59,10 @@ func _process(delta):
 		set_cursor(4)
 	
 	if Input.is_action_just_pressed("confirm"):
-		if len(selection) < 4 and !(GameData.ALL_PLAYABLE_CHARACTERS[cursor] in selection):
+		if len(selection) < MINIMUM_PARTY_SIZE and !(GameData.ALL_PLAYABLE_CHARACTERS[cursor] in selection):
 			selection.append(GameData.ALL_PLAYABLE_CHARACTERS[cursor])
 			$Sprites.get_child(cursor).get_child(1).set("theme_override_colors/font_color", chosen_color)
-		if len(selection) >= 4:
+		if len(selection) >= MINIMUM_PARTY_SIZE:
 			$StartPrompt.visible = true
 			$StartPrompt/AnimationPlayer.play("flash")
 		print(selection)
@@ -95,4 +122,5 @@ func set_cursor(place: int):
 
 func _on_animation_player_animation_finished(anim_name):
 	if anim_name == "fadeout":
-		get_tree().change_scene_to_packed(GameData.Levels[0])
+		#get_tree().change_scene_to_packed(GameData.Levels[0])
+		GameData.travel_to(0, Vector2(250, 170), Vector2(1, 0))

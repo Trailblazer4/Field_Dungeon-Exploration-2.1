@@ -12,6 +12,7 @@ signal history_updated
 
 var direction = Vector2(0, 1)
 
+
 func _ready():
 	# var player2 = get_parent().get_child(1).position
 	#for i in range(20):

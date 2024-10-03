@@ -1,0 +1,13 @@
+moveset is set of enemy moves
+
+var move_priority: Array[int] = []
+for move in moveset:
+	move_priority.append(0)
+
+for move in moveset:
+	Enemy will first check if it needs to be healed
+	if move.element == GameData.HEAL:
+		if getHP() <= (getMaxHP() * 0.15):
+			add priority to healing move
+		else:
+			decrease priority to healing move

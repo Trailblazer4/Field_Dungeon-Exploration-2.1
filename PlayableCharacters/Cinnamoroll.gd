@@ -4,11 +4,20 @@ extends Entity
 func _init():
 	super()
 	myName = "Cinnamoroll"
+	lvl_up_moves = {
+		2: "Hug",
+		3: "Ear Flap",
+		7: "Blue Raspberry Fizzy Drink",
+	}
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	moveset.append(GameData.SpellLibrary["Re"])
 	moveset.append(GameData.SpellLibrary["Reli"])
+	
+	for i in range(10):
+		level_up()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

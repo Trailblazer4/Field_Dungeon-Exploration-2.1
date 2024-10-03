@@ -1,0 +1,13 @@
+ideas for moving locations
+
+
+to start off, we've dealt with entering a battle from the overworld.
+
+we now need to save the current location of the party,
+relative locations and directions of the party members,
+and the world location on the map
+
+when the battle ends the party should be returned to this location
+this info should be processed somehow with GameData perhaps, cuing up location info
+and altering location, but the location info should be stored within a data structure:
+LocationInfo

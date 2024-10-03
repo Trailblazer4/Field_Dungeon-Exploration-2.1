@@ -1,0 +1,19 @@
+[gd_scene load_steps=5 format=3 uid="uid://bkw82rreb7xye"]
+
+[ext_resource type="Script" path="res://LevelTest.gd" id="1_qsfks"]
+[ext_resource type="PackedScene" uid="uid://cl2rd7e5vhk22" path="res://Exit.tscn" id="2_cp2wb"]
+[ext_resource type="Script" path="res://Exit0.gd" id="3_a1cjo"]
+[ext_resource type="Script" path="res://Exit1.gd" id="4_vxrkj"]
+
+[node name="Level" type="Node2D"]
+script = ExtResource("1_qsfks")
+
+[node name="Exit0" parent="." instance=ExtResource("2_cp2wb")]
+script = ExtResource("3_a1cjo")
+entryPoint = Vector2(nan, nan)
+direction = Vector2(nan, nan)
+
+[node name="Exit1" parent="." instance=ExtResource("2_cp2wb")]
+script = ExtResource("4_vxrkj")
+entryPoint = Vector2(nan, nan)
+direction = Vector2(nan, nan)

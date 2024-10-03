@@ -23,10 +23,14 @@ func burn(e: Entity, effect: int, move = null):
 			print(e.myName, " was burned!")
 			print(e.myName, " mgdf cut in half!")
 			e.multMgDf(0.5)
+			var new_status_icon = get_status_icon("Burn")
+			e.health_bar.get_node("StatusIconList").add_child(new_status_icon)
 		1: # called right when effect popped from Entity, status_effects[i].call(self, 1)
 			print(e.myName, " is no longer burned!")
 			print(e.myName, " mgdf back to normal.")
 			e.multMgDf(2.0)
+			var icon_list = e.health_bar.get_node("StatusIconList")
+			icon_list.remove_child(icon_list.get_node("Burn Symbol"))
 		#2: # called at the start of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
 		3: # called at the end of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
 			e.setHP(e.getHP() - (e.getMaxHP() / 16)) # burn effect
@@ -79,11 +83,13 @@ func freeze(e: Entity, effect: int, move = null):
 func sick(e: Entity, effect: int, move = null):
 	match effect:
 		0: # called right when effect added to Entity, status_effects[i].call(self, 0)
-			print(e.myName, " was grounded!")
-			print(e.myName, " def cut in half!")
+			print(e.myName, " became sick!")
+			var new_status_icon = get_status_icon("Sick")
+			e.health_bar.get_node("StatusIconList").add_child(new_status_icon)
 		1: # called right when effect popped from Entity, status_effects[i].call(self, 1)
-			print(e.myName, " is no longer grounded!")
-			print(e.myName, " def back to normal.")
+			print(e.myName, " is no longer sick!")
+			var icon_list = e.health_bar.get_node("StatusIconList")
+			icon_list.remove_child(icon_list.get_node("Sick Symbol"))
 		4: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
 			return [true, 1.0, 1.8] # dmg_mod stays the same, chance gets higher for a new status to land
 		_: # default
@@ -186,6 +192,12 @@ func zapped(e: Entity, effect: int, move = null):
 		_: # default
 			pass
 
+func get_status_icon(status_title: String) -> TextureRect:
+	var new_status_icon = TextureRect.new()
+	new_status_icon.name = "%s Symbol" % status_title
+	new_status_icon.texture = load("res://images/StatusIcons/%s.png" % new_status_icon.name)
+	new_status_icon.expand_mode = TextureRect.EXPAND_FIT_WIDTH
+	return new_status_icon
 
 # when an Entity is hit with an attack, you can first check whether any of their existing status_effects have an interaction with the move
 # (for status in status_effects: status.call(self, 3, move)), then run a chance on the attacking move to see whether a new status is added
@@ -204,17 +216,34 @@ var StatusDictionary: Dictionary = {
 
 # reference the current scene of the game. update this in the _ready() function of each level in the game
 var current_scene = null
+func set_current_scene():
+		current_scene = get_tree().get_root().get_child(-1)
 
 
 var SpellLibrary: Dictionary = {
-	"Punch": Spell.new("Punch", Element.VOID, 10, 0),
-	"Ar": Spell.new("Ar", Element.FIRE, 20, 20, [StatusDictionary["Burn"],]),
-	"Au": Spell.new("Au", Element.ICE, 20, 20, [StatusDictionary["Freeze"],]),
-	"Re": Spell.new("Re", Element.HEAL, 20, 20),
-	"Reli": Spell.new("Reli", Element.HEAL, 40, 30),
-	"Temp": Spell.new("Temp", Element.WIND, 40, 30),
-	"Pew Pew": Spell.new("Pew Pew", Element.LIGHTNING, 15, 0),
-	"Rocket Boosters": Spell.new("Rocket Boosters", Element.LIGHTNING, 0, 20),
+	"Punch": Spell.new("Punch", Element.VOID, 5, 0, Spell.weapon_types.GAUNTLETS),
+	"Super Punch": Spell.new("Super Punch", Element.VOID, 12, 10, Spell.weapon_types.GAUNTLETS),
+	"Ar": Spell.new("Ar", Element.FIRE, 10, 20, Spell.weapon_types.MAGIC, [StatusDictionary["Burn"]], [20]),
+	"Ard": Spell.new("Ard", Element.FIRE, 20, 40, Spell.weapon_types.MAGIC, [StatusDictionary["Burn"]], [30]),
+	"Au": Spell.new("Au", Element.ICE, 10, 20, Spell.weapon_types.MAGIC, [StatusDictionary["Freeze"]], [50]),
+	"Re": Spell.new("Re", Element.HEAL, 10, 20, Spell.weapon_types.MAGIC),
+	"Reli": Spell.new("Reli", Element.HEAL, 15, 30, Spell.weapon_types.MAGIC),
+	"Temp": Spell.new("Temp", Element.WIND, 20, 40, Spell.weapon_types.MAGIC, [StatusDictionary["Sick"]], [20]),
+	"Pew Pew": Spell.new("Pew Pew", Element.LIGHTNING, 15, 0, Spell.weapon_types.HANDGUN),
+	"Rocket Boosters": Spell.new("Rocket Boosters", Element.LIGHTNING, 0, 20, Spell.weapon_types.MAGIC),
+	"Goddess Strike": Spell.new("Goddess Strike", Element.LIGHT, 25, 40, Spell.weapon_types.BROADSWORD),
+}
+
+
+var EquipmentLibrary: Dictionary = {
+	"Primal": Equipment.new("Primal", Equipment.places.WEAPON, Equipment.weapons.BROADSWORD, Element.VOID, [25, 9, 14, 5, 0, 0, 0]),
+	"Lightblotter": Equipment.new("Lightblotter", Equipment.places.WEAPON, Equipment.weapons.POLEARM, Element.DARK, [0, 11, 24, 3, 8, 0, 5]),
+	"Master Sword": Equipment.new("Master Sword", Equipment.places.WEAPON, Equipment.weapons.BROADSWORD, Element.LIGHT,
+	[40, 13, 28, 10, 7, 6, 0], [SpellLibrary["Goddess Strike"]]),
+	"Silver Armor": Equipment.new("Silver Armor", Equipment.places.ARMOR, Equipment.armors.HEAVY, Element.VOID, [70, 0, 0, 18, 0, 6, 0]),
+	"Mega Buster": Equipment.new("Mega Buster", Equipment.places.WEAPON, Equipment.weapons.HANDGUN, Element.LIGHTNING, [0, 15, 18, 0, 12, 0, 4]),
+	"Yontou-Jishi": Equipment.new("Yontou-Jishi", Equipment.places.WEAPON, Equipment.weapons.KATANA, Element.VOID, [0, 9, 28, 6, 21, 4, 5]),
+	"Super Suit": Equipment.new("Super Suit", Equipment.places.ARMOR, Equipment.armors.HEAVY, Element.VOID, [100, 25, 6, 30, 4, 30, 2]),
 }
 
 
@@ -225,6 +254,52 @@ var Levels = [
 	load("res://GrassField.tscn"),
 	load("res://Dungeon.tscn"),
 ]
+
+var current_level = 0
+
+
+# these functions will help us generalize/simplify exiting/entering zones
+# ideally, when a zone is exited from a specific area on the map that area calls travel_to(areaName)
+# and also provides an entry point to that area
+# whether this is stored in a nested map or something will be decided later, but for now
+# we know that the user enters a particular vicinity or area on the current map, that area
+# calls travel_to(place), and sets an entryPoint to make transition from this place to the next seamless
+
+# of course, each zone has multiple neighbors so that means that each exit area on its map will
+# contain a different name for travel_to() to use as a parameter, as well as a different Vector2
+# for entryPoint
+func travel_to(level: int, entryPoint: Vector2, direction: Vector2): # path is a new level scene
+	current_level = level
+	if current_scene != null:
+		current_scene.remove_child(party) # before anything, remove the party so it's not erased
+	# get entryPoint from newLocation and set the following:
+	# party.position = entryPoint
+	# for pm in party.get_children(): pm.position = 0; pm.direction = party.get_child(0).direction
+	party.teleport(entryPoint)
+	party.face(direction)
+	party.slot(0).position_history.clear()
+	
+	get_tree().change_scene_to_packed(Levels[level]) # change level
+	#set_current_scene()
+	#print("Current scene: ", current_scene)
+	# in the _ready() function of the new scene there should be a LocationInfo made,
+	# and a statement setting GameData.current_scene = self
+	# fade the screen in
+	#addChests()
+	current_scene.add_child(party)
+	#current_scene.fadebox.play("fadein")
+
+
+# concept: if the player is going through an exit zone with the same level as the one they're
+# currently in, they do not want to unload the level and go somewhere else; instead, they just
+# want to teleport/face somewhere else on the same map.
+# an example being that the player walks through a door in a dungeon which takes them to another room.
+# that other room can just be another part of the level already loaded in
+# depending on the level we might put it in segments where different parts are loaded in separately
+# if too big. in this case, however, we WOULD end up using travel_to() anyway, so the utility
+# of this walk_to() function is still to be determined
+#func walk_to(entryPoint: Vector2, direction: Vector2):
+	#pass
 
 
 # chests dictionary. Each key is a location name (obtained from current_scene.locationInfo.locationName)
@@ -273,10 +348,10 @@ var battling = false
 var q = []
 var number_of_states = 3
 
-var dir = DirAccess.open("user://")
+var saveDir = DirAccess.open("user://")
 
 
-enum Status{
+enum Status {
 	BRN,
 	FRZ,
 	GRND,
@@ -286,7 +361,7 @@ enum Status{
 	ZAP,
 }
 
-enum Element{
+enum Element {
 	VOID,
 	FIRE,
 	ICE,
@@ -383,7 +458,7 @@ func _process(delta):
 	if Input.is_action_just_pressed("switch"):
 		GameData.rotateParty()
 
-
+signal pause_menu_open
 func pause(scene):
 	#var pauseScreen = scene.get_node("PauseScreen")
 	#scene.visible = false
@@ -397,6 +472,7 @@ func pause(scene):
 	get_tree().paused = true
 	transition(0, 1)
 	PauseMenu.get_node("Fade/AnimationPlayer").play("fadein")
+	pause_menu_open.emit()
 	#print("paused")
 
 
@@ -478,25 +554,13 @@ func removeFromParty(index: int):
 			  # a reference to the character is returned
 
 
-# these functions will help us generalize/simplify exiting/entering zones
-func travel_to(path: String): # path is a new level scene
-	current_scene.remove_child(party) # before anything, remove the party so it's not erased
-	# then fade the screen out
-	get_tree().change_scene_to_file(path) # change level
-	# in the _ready() function of the new scene there should be a LocationInfo made,
-	# and a statement setting GameData.current_scene = self
-	# fade the screen in
-	addChests()
-	current_scene.add_child(party)
-
-
-func addChests():
-	var loadChest = load("res://Chest.tscn")
-	var chestsHere = chests[current_scene.locationInfo.locationName]
-	for i in range(len(chestsHere)):
-		var newChest = loadChest.instantiate()
-		add_child(newChest)
-		newChest.setChest(i, current_scene.locationInfo.locationName, chestsHere[i][2])
+#func addChests(): # TODO currently unused. Should be refactored
+	#var loadChest = load("res://Chest.tscn")
+	#var chestsHere = chests[current_scene.locationInfo.locationName]
+	#for i in range(len(chestsHere)):
+		#var newChest = loadChest.instantiate()
+		#add_child(newChest)
+		#newChest.setChest(i, current_scene.locationInfo.locationName, chestsHere[i][2])
 
 
 func enter_battle():

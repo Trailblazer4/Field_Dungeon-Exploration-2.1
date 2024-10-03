@@ -1,0 +1,53 @@
+create a Fadebox scene to be instantiated as a child of every Level in the game
+
+create an Exit scene to be added manually when creating a level
+
+create a Level Node. This scene instantiates a Fadebox scene and adds it as a child
+
+(Note: instantiating a Node as a scene gives access to its children Nodes as well.
+Instantiating it using .new() gives access to data about the Node but not its children,
+such as the AnimationPlayer in the Fadebox scene)
+
+
+now each level in the game will automatically have an overlay for fading and doing color animations
+
+for each level, after designing it, you can create Exit scenes and add them as children
+at locations where you want the player to be able to leave
+
+each Exit will have methods and variables for what they do and where they lead
+it also makes sense to set these up manually in each Level scene.
+Notes for what makes sense to include in an exit:
+	- the Exit can be a child of a location in the level (such as a tree, door, or bush)
+	  so that when the location moves, so too does the Area2D allowing the player to go travel
+	
+	- the Exit must have an entryPoint for the next area (Vector2 describing where the Party starts)
+
+	- the Exit must have a direction that the Party faces when they arrive
+	
+	- the Exit must contain a number referencing the Level the Party is traveling to.
+	  when the Exit is entered, it sets GameData.currentLevel to this number, then
+	  calls get_tree().change_scene_to_packed(GameData.Levels[GameData.currentLevel])
+
+
+Good morning, future me!
+Now's the time to test the Exit setup.
+The following should ideally occur:
+	- when a general Exit area is entered, it calls a function in its parent Level with some travel info
+	- the Level receives this information, storing it in a travelInfo dictionary
+	- the Level then plays an animation of the Fadebox
+	- once the Fadebox's animation is over, the Level then asks GameData to move information around
+	  and continue on to the next Level
+
+
+
+
+
+
+
+
+for the Exit class, set _init(): body_entered.connect(on_body_entered)
+now, every Exit has some way of sensing bodies entering automatically, which
+they can use to call travel_to() in the level node (GameData.currentLevel)
+
+in the Level node (GameData.currentLevle), have a travel_to() function
+which receives info once it's called from the on_body_entered() function(s)

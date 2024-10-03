@@ -1,6 +1,7 @@
 extends Node2D
 
 signal battle_over
+signal move_used
 
 var q: Array[bool] = [true, false, false, false, false]
 func transition(i: int, j: int):
@@ -22,6 +23,8 @@ var thisTurn
 var turnSet: bool = false
 
 func _ready():
+	print(GameData.q)
+	print("Character: ", GameData.ALL_PLAYABLE_CHARACTERS[0])
 	# set background to whatever locationInfo/subLocationInfo tells you is the location of the battle
 	for i in range(len(GameData.party.get_children())):
 		if GameData.party.get_child(i).get_child_count() > 0:
@@ -35,6 +38,7 @@ func _ready():
 			get_node("Battle HUD/Name%d" % i).text = pm.myName
 			pm.health_bar = get_node("Battle HUD/HealthBars/HealthBar%d" % i)
 			pm.health_bar.visible = true
+			print(pm.myName, ": ", pm.getMaxHP())
 			pm.health_bar.init_health(pm.getMaxHP()) # set up health bar with Max HP
 			pm.health_bar.health = pm.getHP() # set current HP to health bar value
 	generateEnemies()
@@ -54,13 +58,29 @@ var decided: bool = false # was a decision made in this turn yet?
 var decision: String = "" # is the decision an attack, spell, or item?
 var chosenMove = null # what move or item specifically?
 
+var stop_process = false
 func _process(delta):
+	if stop_process:
+		return
+
+	# instant battle end
+	if Input.is_key_pressed(KEY_F):
+		stop_process = true
+		done()
+		return
+	
+	if allGone(enemies):
+		done()
+		stop_process = true
+		return
+	
 	if turnOrder[0].get_child(0).speedCounter >= 100:
 		thisTurn = turnOrder[0]
 		if !turnSet:
 			turnSet = true
-			$"Battle HUD/MagicMenu".makeMagic(thisTurn.get_child(0).moveset)
-			$"Battle HUD/ItemsMenu".makeItems(GameData.inventory)
+			if thisTurn in get_node("Party").get_children():
+				$"Battle HUD/MagicMenu".makeMagic(thisTurn.get_child(0).moveset)
+				$"Battle HUD/ItemsMenu".makeItems(GameData.inventory)
 			for name in $"Battle HUD".get_children():
 				if name is Label:
 					if name.text == thisTurn.get_child(0).myName:
@@ -93,6 +113,10 @@ func _process(delta):
 			var theresATarget = chooseScreen()
 			if theresATarget:
 				await thisTurn.get_child(0).use(chosenMove, target)
+				emit_signal("move_used")
+				stop_process = true
+				await get_node("Battle HUD/BattlePrompt").battle_continue
+				stop_process = false
 				if target.getHP() <= 0:
 					target.setHP(0)
 					#target.visible = false
@@ -121,7 +145,7 @@ func _process(delta):
 			turnSet = false
 			turnOrder[0].get_child(0).updateCounter(true)
 			turnOrder.append(turnOrder.pop_front())
-
+			
 		#if Input.is_key_pressed(KEY_V):
 			#for i in range(len($Party.get_children())):
 				#if $Party.get_child(i).get_child_count() > 0:
@@ -140,7 +164,7 @@ func _process(delta):
 func mainScreen(): # q[0]
 	decision = "Attack"
 	if Input.is_action_just_pressed("confirm"):
-		chosenMove = thisTurn.get_child(0).basic_attack
+		chosenMove = thisTurn.get_child(0).basic_attack()
 		transition(0, 4)
 	if Input.is_action_just_pressed("cancel"):
 		transition(0, 1)
@@ -152,6 +176,10 @@ func mainScreen(): # q[0]
 		$"Battle HUD/ItemsMenu".visible = true
 		$"Battle HUD/ItemsMenu".process_mode = Node.PROCESS_MODE_INHERIT
 		transition(0, 3)
+	#if Input.is_action_just_pressed("weapon_switch"):
+		#thisTurn.get_child(0).current_equipment["Weapon 1"].type += 1
+		#thisTurn.get_child(0).current_equipment["Weapon 1"].type %= 12
+		#print(thisTurn.get_child(0).current_equipment["Weapon 1"].type)
 
 
 func defendScreen(): # q[1]
@@ -274,8 +302,90 @@ func set_target(move_amount: int):
 
 
 func enemyTurn():
+	var mf: Entity = thisTurn.get_child(0) # the mf fighting this turn
+	
+	var priority_list = []
+	for m in mf.moveset:
+		priority_list.append(0)
+	print("This turn name: ", mf.myName)
+	print("This turn moveset: ", mf.moveset)
+	print("This turn priority: ", priority_list)
+	
+	for m in len(mf.moveset):
+		var move = mf.moveset[m]
+		
+		if move.spReq > mf.getSP():
+			priority_list[m] -= 100000
+			continue
+		
+		if ally_needs_heal(get_node("Enemies")):
+			if move.element == GameData.Element.HEAL:
+				priority_list[m] += 4
+			else:
+				priority_list[m] -= 4
+		else:
+			if move.element == GameData.Element.HEAL:
+				priority_list[m] -= 4
+			else:
+				priority_list[m] += 4
+		
+		priority_list[m] -= (move.spReq / 10)
+		# priority_list[m] += (move.power / 10) # while this is how I decide based on power now, in the future there will be
+											  # a function which simulates damage dealt/healed from a move on a chosen target
+											  # to check the best move to use.
+											  # first, it will be decided whether a heal or an attack in necessary.
+											  # then, all of the heals or all of the attacks will be compared against one another
+											  # by simulating their effects onto a target. ((amountHealed || amountDealt) / 100)
+											  # is added onto a move's priority, meaning even if a move is weaker, if its effects
+											  # are equivalent to that of another move (due to user's ally's HP being high enough
+											  # or user's enemy's HP being low enough) then it will be given equal treatment. but,
+											  # since it uses less SP, it will end up having higher priority
+	priority_sort(mf.moveset, priority_list)
+	
+	var receiver: Entity
+	if mf.moveset[0].element == GameData.Element.HEAL: # if choosing to heal this turn
+		receiver = minHP(get_node("Enemies"))
+		for n in len(priority_list):
+			if mf.moveset[n].element == GameData.Element.HEAL:
+				#priority_list[n] += (run_simulation(mf, mf.moveset[n], receiver, 0) / 100) # 0 means check heal amount
+				priority_list[n] += mf.use(mf.moveset[n], receiver, true) / 10
+	else: # if choosing to attack this turn
+		receiver = minHP(get_node("Party"))
+		for n in len(priority_list):
+			if mf.moveset[n].element != GameData.Element.HEAL:
+				#priority_list[n] += (run_simulation(mf, mf.moveset[n], receiver, 1) / 100) # 1 means check damage amount
+				priority_list[n] += mf.use(mf.moveset[n], receiver, true) / 10
+	priority_sort(mf.moveset, priority_list)
+	mf.use(mf.moveset[0], receiver)
+	chosenMove = mf.moveset[0]
+	print(mf.myName, " used ", mf.moveset[0].title, " on ", receiver.myName, "!")
+	
+	#if ally_needs_heal(get_node("Enemies")):
+		#print("Heal this dude bro!")
+	mf.setSP(mf.getSP() - mf.moveset[0].spReq)
 	decided = true
-	pass
+	
+	emit_signal("move_used")
+	stop_process = true
+	await get_node("Battle HUD/BattlePrompt").battle_continue
+	stop_process = false
+
+
+func priority_sort(moves, prios):
+	for i in range(1, len(prios)):
+		var k: int = i
+		while(k > 0 && prios[k] > prios[k - 1]):
+			# swap the priority counters
+			var temp = prios[k]
+			prios[k] = prios[k - 1]
+			prios[k - 1] = temp
+			
+			# then swap moves in moves
+			temp = moves[k]
+			moves[k] = moves[k - 1]
+			moves[k - 1] = temp
+			
+			k -= 1
 
 
 func party_get(index: int):
@@ -357,3 +467,57 @@ func speedInsertSort(turnOrder):
 			turnOrder[k] = turnOrder[k - 1]
 			turnOrder[k - 1] = temp
 			k -= 1
+
+
+func ally_needs_heal(group) -> bool: # use on (probably enemy) group of characters to check if one needs healing.
+									 # in enemy code: if ally_needs_heal(get_node("Enemies")): heal_move_priority += 4
+	for slot in group.get_children():
+		var member: Entity = slot.get_child(0)
+		if member.getHP() <= (member.getMaxHP() * 0.15):
+			print("Damn %s need some healin' bro" % member.myName)
+			return true
+	return false
+
+
+func minHP(group):
+	var min: Entity = group.get_child(0).get_child(0)
+	for child in group.get_children():
+		var c = child.get_child(0)
+		if c.getHP() < min.getHP() and c.getHP() > 0:
+			min = c
+	if min.getHP() <= (min.getMaxHP() * 0.15):
+		return min
+	else:
+		var rng = RandomNumberGenerator.new()
+		var n = rng.randi_range(0, group.get_child_count() - 1)
+		return group.get_child(n).get_child(0)
+
+func allGone(group: Array):
+	for member in group:
+		if member.get_child(0).getHP():
+			return false
+	return true
+
+func done():
+	#get GameData.locationInfo, parse it, put the party nodes back in the main level
+	#and set their positions/directions
+	for i in range(4):
+		var returning = $Party.get_child(i).get_child(0)
+		$Party.get_child(i).remove_child(returning)
+		GameData.addToParty(returning, i)
+	#get_tree().change_scene_to_packed(GameData.Levels[0])
+	get_tree().change_scene_to_packed(GameData.Levels[GameData.current_level])
+	for nme in enemies:
+		nme.get_child(0).queue_free()
+	GameData.current_scene.add_child(GameData.party)
+
+
+#func run_simulation(user: Entity, move, receiver: Entity, damage_type):
+	#var og_hp = receiver.getHP()
+	#match(damage_type):
+		#0:
+			#var new_hp = min(receiver.getMaxHP(), receiver.getHP() + (user.getMag() * move.power))
+			#return new_hp - og_hp
+		#1:
+			#var new_hp = max(0, receiver.getHP() - (user.getMag() * move.power))
+			#return og_hp - new_hp

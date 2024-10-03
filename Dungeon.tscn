@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://d4lst1u07ewmb"]
+[gd_scene load_steps=5 format=3 uid="uid://dtml4anj6n06y"]
 
 [ext_resource type="Script" path="res://Dungeon.gd" id="1_30pac"]
 [ext_resource type="Texture2D" uid="uid://c6gy3lgadbh5y" path="res://images/narshe.png" id="2_gsig0"]
