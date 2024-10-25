@@ -156,6 +156,10 @@ func treeView():
 	member(3).myName if member(3) else "Empty", str(slot(3).get_child(1)),]
 
 
+func emptyPositionData():
+	slot(0).position_history.clear()
+
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	print("Party formed")

@@ -2,7 +2,12 @@
 extends Level
 
 #var nextLevel = load("res://Dungeon.tscn") # or preload, either seems to work fine
-var loadChest = load("res://Chest.tscn")
+#var loadChest = load("res://Chest.tscn")
+
+# NEW for each Level have an enemy pool and other info available within the editor
+@export var location_name: String
+@export var example_pool: Array[String] = []
+
 
 #var fadeout = false
 var exitNumber
@@ -45,6 +50,8 @@ func _ready():
 	#print(GameData.locationInfo)
 	#if(GameData.locationInfo):
 		#GameData.locationInfo.queue_free()
+		
+	# TODO add options for this in editor???
 	GameData.locationInfo = LocationInfo.new("Grass Field")
 	GameData.locationInfo.addToEnemyPool("Gibbler", 94)
 	GameData.locationInfo.addToEnemyPool("The Egg", 6)
@@ -54,7 +61,7 @@ func _ready():
 
 func _process(delta):
 	if Input.is_key_pressed(KEY_M):
-		emptyPositionData()
+		GameData.party.emptyPositionData()
 		remove_child(GameData.party) # remove party so it doesn't get queue_free()'d
 		get_tree().change_scene_to_packed(GameData.Levels[1])
 	
@@ -75,17 +82,17 @@ func _physics_process(delta):
 	pass
 
 
-func emptyPositionData():
-	var leader = GameData.party.get_child(0)
-	leader.position_history.clear()
+#func emptyPositionData():
+	#var leader = GameData.party.get_child(0)
+	#leader.position_history.clear()
 
 
-func addChests():
-	var chestsHere = GameData.chests[GameData.locationInfo.locationName]
-	for i in range(len(chestsHere)):
-		var newChest = loadChest.instantiate()
-		add_child(newChest)
-		newChest.setChest(i, GameData.locationInfo.locationName, chestsHere[i][2])
+#func addChests():
+	#var chestsHere = GameData.chests[GameData.locationInfo.locationName]
+	#for i in range(len(chestsHere)):
+		#var newChest = loadChest.instantiate()
+		#add_child(newChest)
+		#newChest.setChest(i, GameData.locationInfo.locationName, chestsHere[i][2])
 
 
 # 0: passive effect

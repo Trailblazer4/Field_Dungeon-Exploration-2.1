@@ -221,7 +221,7 @@ func set_current_scene():
 
 
 var SpellLibrary: Dictionary = {
-	"Punch": Spell.new("Punch", Element.VOID, 5, 0, Spell.weapon_types.GAUNTLETS),
+	"Punch": Spell.new("Punch", Element.VOID, 100, 0, Spell.weapon_types.GAUNTLETS),
 	"Super Punch": Spell.new("Super Punch", Element.VOID, 12, 10, Spell.weapon_types.GAUNTLETS),
 	"Ar": Spell.new("Ar", Element.FIRE, 10, 20, Spell.weapon_types.MAGIC, [StatusDictionary["Burn"]], [20]),
 	"Ard": Spell.new("Ard", Element.FIRE, 20, 40, Spell.weapon_types.MAGIC, [StatusDictionary["Burn"]], [30]),
@@ -277,7 +277,8 @@ func travel_to(level: int, entryPoint: Vector2, direction: Vector2): # path is a
 	# for pm in party.get_children(): pm.position = 0; pm.direction = party.get_child(0).direction
 	party.teleport(entryPoint)
 	party.face(direction)
-	party.slot(0).position_history.clear()
+	#party.slot(0).position_history.clear()
+	GameData.party.emptyPositionData()
 	
 	get_tree().change_scene_to_packed(Levels[level]) # change level
 	#set_current_scene()

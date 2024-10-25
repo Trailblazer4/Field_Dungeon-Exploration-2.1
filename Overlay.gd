@@ -3,6 +3,7 @@ extends ColorRect
 
 func play(anim_name):
 	get_child(0).play(anim_name)
+	print("Played ", anim_name)
 
 
 # Called when the node enters the scene tree for the first time.

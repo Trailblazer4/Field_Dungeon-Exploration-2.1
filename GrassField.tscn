@@ -967,6 +967,8 @@ size = Vector2(64, 61)
 
 [node name="GrassField" type="Node2D"]
 script = ExtResource("1_mqhp4")
+location_name = "Grass Field"
+example_pool = Array[String](["Gibbler", "The Egg"])
 
 [node name="TileMap" type="TileMap" parent="."]
 tile_set = SubResource("TileSet_whk8p")
