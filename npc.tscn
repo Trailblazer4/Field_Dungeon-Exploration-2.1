@@ -1,0 +1,39 @@
+[gd_scene load_steps=5 format=3 uid="uid://dxq0rcpc3ynrg"]
+
+[ext_resource type="Script" path="res://npc.gd" id="1_al5um"]
+[ext_resource type="Texture2D" uid="uid://w0u0np4jtvit" path="res://images/Allen Walker.png" id="2_4yj31"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vfbrw"]
+size = Vector2(24, 51)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4bqja"]
+size = Vector2(36, 57)
+
+[node name="NPC" type="CharacterBody2D"]
+motion_mode = 1
+script = ExtResource("1_al5um")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_4yj31")
+hframes = 4
+vframes = 4
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Sprite2D"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -0.5)
+shape = SubResource("RectangleShape2D_vfbrw")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 3.0
+autostart = true
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(0, -0.5)
+shape = SubResource("RectangleShape2D_4bqja")
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]

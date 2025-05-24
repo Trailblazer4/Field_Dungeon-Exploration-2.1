@@ -5,7 +5,7 @@ uniform sampler2D noise_pattern;
 // shader to make something look "fiery" in color
 void fragment() {
 	float timeChange = sin(TIME * 1.8) / 2.0;
-	
+
 	//float image_a = texture(TEXTURE, UV).a;
 	vec4 base_color = texture(TEXTURE, UV);
 	//base_color.a = image_a;

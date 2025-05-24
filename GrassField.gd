@@ -8,12 +8,17 @@ extends Level
 @export var location_name: String
 @export var example_pool: Array[String] = []
 
+@onready var texture: TextureRect = $ShatterOverlay
+@onready var viewport: SubViewport = $ShatterViewport
 
 #var fadeout = false
 var exitNumber
 
 func _ready():
+	#texture.texture = viewport.get_texture()
 	#fadebox.play("fadein")
+	Overlay.scaleTo(Vector2(1300, 700))
+	Overlay.play("fadein_slow")
 	
 	var cin = GameData.party.member(0)
 	
@@ -71,6 +76,10 @@ func _process(delta):
 			GameData.locationInfo.partyLocations.append(pm.position)
 			GameData.locationInfo.partyDirections.append(pm.direction)
 		print(GameData.locationInfo)
+		
+		#texture.texture = viewport.get_texture()
+		#await get_tree().create_timer(1.5).timeout
+		
 		
 		#$Fade/AnimationPlayer.play("battle_fade")
 		remove_child(GameData.party)

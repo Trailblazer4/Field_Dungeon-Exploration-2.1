@@ -5,22 +5,29 @@ class_name Level
 # each Level/menu/part of the game will reference Overlay for fading or shading
 
 #@onready var fadebox = preload("res://fadebox.tscn").instantiate()
-var fadebox
-var fadeboxInfo = preload("res://fadebox.tscn")
+#var fadebox
+#var fadeboxInfo = preload("res://fadebox.tscn")
 var loadChest = load("res://Chest.tscn")
 
 func _init():
 	print("initialized")
-	fadebox = fadeboxInfo.instantiate()
-	#fadebox.color = "#00000000"
-	add_child(fadebox)
-	fadebox.name = "myFade"
-	fadebox.get_child(0).animation_finished.connect(on_fadeout_end)
+	#fadebox = fadeboxInfo.instantiate()
+	##fadebox.color = "#00000000"
+	#add_child(fadebox)
+	#fadebox.name = "myFade"
+	#fadebox.get_child(0).animation_finished.connect(on_fadeout_end)
 	GameData.current_scene = self
 	PauseMenu.current_scene = self
-	fadebox.play("fadein")
+	#fadebox.play("fadein")
+
+var interaction = null
 
 # var chests = ...
+
+# if hostile, spawn enemies randomly around the player from time to time.
+# maybe have a timer that has random intervals, and when it goes off,
+# it spawn an enemy somewhere to start moving to start a battle when the player touches it.
+var hostile: bool = false
 
 var travelInfo: Dictionary = {}
 
@@ -29,7 +36,12 @@ func travel_to(level: int, entryPoint: Vector2, direction: Vector2):
 	travelInfo["entryPoint"] = entryPoint
 	travelInfo["direction"] = direction
 	
-	fadebox.play("exit_zone_fadeout")
+	#fadebox.play("exit_zone_fadeout")
+	Overlay.play("fadeout_zone")
+	await Overlay.finished()
+	GameData.party.teleport(travelInfo["entryPoint"])
+	print(travelInfo)
+	GameData.travel_to(travelInfo["level"], travelInfo["entryPoint"], travelInfo["direction"])
 	#var fe = func():
 		#print(level, entryPoint, direction)
 		#print("lambda over")

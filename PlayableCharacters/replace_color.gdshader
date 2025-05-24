@@ -1,0 +1,25 @@
+shader_type canvas_item;
+
+// ca0000 for Red Link
+// b200a1 for Purple Link
+// 00b1b0 for Cyan Link
+
+// color for pink hair: f161af
+
+uniform float tolerance: hint_range(0.0, 1.0, 0.01) = 0.1;
+uniform vec4 prev_color: source_color = vec4(1.0);
+uniform vec4 new_color: source_color = vec4(0.0, 0.0, 0.0, 1.0);
+
+void fragment() {
+    vec4 color = texture(TEXTURE, UV);
+    vec4 initial_color = color;
+
+	float color_distance = distance(prev_color, color);
+
+    if (color_distance <= tolerance) {
+		color = mix(new_color, color, color_distance);
+		color.a = initial_color.a;
+    }
+
+    COLOR = color;
+}

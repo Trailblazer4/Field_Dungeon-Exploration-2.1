@@ -7,7 +7,7 @@ extends Level
 func _ready():
 	#print(get_tree().root.get_children())
 	#add_child(fadebox)
-	fadebox.scaleTo(Vector2(1250, 1000))
+	Overlay.scaleTo(Vector2(1250, 1000))
 	GameData.current_scene = self
 	PauseMenu.current_scene = self
 	print("Dungeon start")
@@ -20,7 +20,8 @@ func _ready():
 	print("positioned party successfully")
 	#camera = GameData.party.get_child(0).get_child(2)
 	GameData.partyCamera.zoom *= 2
-	fadebox.play("fadein")
+	#fadebox.play("fadein")
+	Overlay.play("fadein_zone")
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

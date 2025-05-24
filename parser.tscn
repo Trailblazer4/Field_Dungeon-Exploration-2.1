@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://c60llv4oou10y"]
+
+[ext_resource type="Script" path="res://parser.gd" id="1_vol2y"]
+
+[node name="Parser" type="Node2D"]
+script = ExtResource("1_vol2y")
+example_lines = Array[String](["Hi there!", "Have you seen \\\\party 0 name anywhere?", "\\\\give Silver Sword x 1", "\\\\give Potion x 99", "And lastly, how about you take this and take \\\\party 1 name out for a date?", "\\\\give Bouquet x 1", "\\\\romance \\\\party 1 name 5", "\\\\party 0 stats @1"])

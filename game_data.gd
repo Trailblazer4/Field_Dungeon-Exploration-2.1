@@ -1,5 +1,20 @@
 extends Node
 
+# Godot Default Colors: (0.20, 0.23, 0.28, 1.00)	(0.43, 0.73, 0.98, 1.00)
+# Mine Colors: (0.15, 0.20, 0.36, 1.00)	(0.00, 0.81, 0.72, 1.00)
+# Rust Colors: (0.23, 0.25, 0.28, 1.00)	(1.00, 0.49, 0.15, 1.00)
+# Pretty Colors: (3b3564)	(de9ac8)
+# Kizumonogatari: (e15e73)	(ff916e)
+# Seafoam: (5ba177)	(00c4fc)
+# Seafoam Alter: (1685a1 (Light) | 0c596c (Dark))	(33d09d)
+# Crucified: (24005d)	(f50081)
+
+# TODO:
+# - new project to test textboxes with NPCs in a town level, scrolling text, Area2D to detect
+# - new project to test magic animations, moving camera that focuses on spell,
+# 	then attacks enemy, shaders for coloring the screen, etc.
+
+
 var ALL_PLAYABLE_CHARACTERS = [] # holds all references to all (playable) characters in the game
 var party = load("res://Party.tscn").instantiate() # initial creation of the party container
 #var collision_objects = [] # bookkeeping for collision objects (might delete later)
@@ -23,19 +38,26 @@ func burn(e: Entity, effect: int, move = null):
 			print(e.myName, " was burned!")
 			print(e.myName, " mgdf cut in half!")
 			e.multMgDf(0.5)
+			e.info()
 			var new_status_icon = get_status_icon("Burn")
 			e.health_bar.get_node("StatusIconList").add_child(new_status_icon)
 		1: # called right when effect popped from Entity, status_effects[i].call(self, 1)
 			print(e.myName, " is no longer burned!")
 			print(e.myName, " mgdf back to normal.")
 			e.multMgDf(2.0)
+			e.info()
 			var icon_list = e.health_bar.get_node("StatusIconList")
 			icon_list.remove_child(icon_list.get_node("Burn Symbol"))
-		#2: # called at the start of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
-		3: # called at the end of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
+		#2: # called at the start of every turn. Burn doesn't do anything for this effect so it can be passed as default.
+		
+		#3: # called in the middle of every turn, after selecting an action
+		# but before the action successfully works. Burn does nothing here.
+		
+		4: # called at the end of every turn. Take HP away
 			e.setHP(e.getHP() - (e.getMaxHP() / 16)) # burn effect
+			e.setHP(round(e.getHP()))
 			e.health_bar.health = e.getHP()
-		4: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
+		5: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
 			var effect_activated = [false]
 			# possible for a Spell to have multiple elements, so check for all of them.
 			if move.element == Element.WIND:
@@ -64,11 +86,21 @@ func freeze(e: Entity, effect: int, move = null):
 			print(e.myName, " was frozen!")
 			print(e.myName, " spd cut in half!")
 			e.multSpd(0.5)
+			var new_status_icon = get_status_icon("Freeze")
+			e.health_bar.get_node("StatusIconList").add_child(new_status_icon)
 		1: # called right when effect popped from Entity, status_effects[i].call(self, 1)
 			print(e.myName, " is no longer frozen!")
 			print(e.myName, " spd back to normal.")
 			e.multSpd(2.0)
-		4: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
+			var icon_list = e.health_bar.get_node("StatusIconList")
+			icon_list.remove_child(icon_list.get_node("Freeze Symbol"))
+		3:  # called right before move is used.
+			# in the case of freeze, this will randomly choose to return
+			# true if the user can move and false if they are frozen and can't move.
+			# for other effects there might be a random surge of power,
+			# or an accuracy decrease.
+			return randi_range(1, 3) < 3
+		5: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
 			var effect_activated = [false]
 			if move.element == Element.EARTH:
 				print("x1.3 damage from ", move.title, "!")
@@ -90,7 +122,7 @@ func sick(e: Entity, effect: int, move = null):
 			print(e.myName, " is no longer sick!")
 			var icon_list = e.health_bar.get_node("StatusIconList")
 			icon_list.remove_child(icon_list.get_node("Sick Symbol"))
-		4: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
+		5: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
 			return [true, 1.0, 1.8] # dmg_mod stays the same, chance gets higher for a new status to land
 		_: # default
 			pass
@@ -105,8 +137,9 @@ func grounded(e: Entity, effect: int, move = null):
 			print(e.myName, " is no longer grounded!")
 			print(e.myName, " def back to normal.")
 		#2: # called at the start of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
-		#3: # called at the end of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
-		4: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
+		#3: # called at the middle of every turn.
+		#4: # called at the end of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
+		5: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
 			var effect_activated = false
 			# possible for a Spell to have multiple elements, so check for all of them.
 			if move.element == Element.FIRE:
@@ -130,17 +163,16 @@ func wet(e: Entity, effect: int, move = null):
 			print(e.myName, " def back to normal.")
 		#2: # called at the start of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
 		#3: # called at the end of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
-		4: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
-			var effect_activated = false
+		5: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
+			var effect_activated = [false]
 			# possible for a Spell to have multiple elements, so check for all of them.
 			if move.element == Element.FIRE:
 				print("x1.3 damage from ", move.title, "!")
-				effect_activated = true
+				effect_activated = [true, 1.3, 1.6]
 			if move.element == Element.LIGHTNING:
 				print(move.title, " negated! x0 damage.")
-				effect_activated = true
-			if effect_activated:
-				pass # pop this status effect from Entity.status_effects
+				effect_activated = [true, 0.0, 0.0]
+			return effect_activated
 		_: # default
 			pass
 
@@ -154,7 +186,7 @@ func steam(e: Entity, effect: int, move = null):
 			print(e.myName, " def back to normal.")
 		#2: # called at the start of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
 		#3: # called at the end of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
-		4: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
+		5: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
 			var effect_activated = false
 			# possible for a Spell to have multiple elements, so check for all of them.
 			if move.element == Element.FIRE:
@@ -178,7 +210,7 @@ func zapped(e: Entity, effect: int, move = null):
 			print(e.myName, " def back to normal.")
 		#2: # called at the start of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
 		#3: # called at the end of every turn. Grounded doesn't do anything for this effect so it can be passed as default.
-		4: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
+		5: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
 			var effect_activated = false
 			# possible for a Spell to have multiple elements, so check for all of them.
 			if move.element == Element.FIRE:
@@ -225,9 +257,11 @@ var SpellLibrary: Dictionary = {
 	"Super Punch": Spell.new("Super Punch", Element.VOID, 12, 10, Spell.weapon_types.GAUNTLETS),
 	"Ar": Spell.new("Ar", Element.FIRE, 10, 20, Spell.weapon_types.MAGIC, [StatusDictionary["Burn"]], [20]),
 	"Ard": Spell.new("Ard", Element.FIRE, 20, 40, Spell.weapon_types.MAGIC, [StatusDictionary["Burn"]], [30]),
-	"Au": Spell.new("Au", Element.ICE, 10, 20, Spell.weapon_types.MAGIC, [StatusDictionary["Freeze"]], [50]),
+	"Au": Spell.new("Au", Element.ICE, 10, 20, Spell.weapon_types.MAGIC, [StatusDictionary["Freeze"]], [20]),
+	"Auro": Spell.new("Auro", Element.ICE, 20, 40, Spell.weapon_types.MAGIC, [StatusDictionary["Freeze"]], [30]),
 	"Re": Spell.new("Re", Element.HEAL, 10, 20, Spell.weapon_types.MAGIC),
 	"Reli": Spell.new("Reli", Element.HEAL, 15, 30, Spell.weapon_types.MAGIC),
+	"Te": Spell.new("Te", Element.WIND, 10, 20, Spell.weapon_types.MAGIC, [StatusDictionary["Sick"]], [10]),
 	"Temp": Spell.new("Temp", Element.WIND, 20, 40, Spell.weapon_types.MAGIC, [StatusDictionary["Sick"]], [20]),
 	"Pew Pew": Spell.new("Pew Pew", Element.LIGHTNING, 15, 0, Spell.weapon_types.HANDGUN),
 	"Rocket Boosters": Spell.new("Rocket Boosters", Element.LIGHTNING, 0, 20, Spell.weapon_types.MAGIC),
@@ -253,6 +287,7 @@ var EquipmentLibrary: Dictionary = {
 var Levels = [
 	load("res://GrassField.tscn"),
 	load("res://Dungeon.tscn"),
+	load("res://Town.tscn"),
 ]
 
 var current_level = 0
@@ -321,6 +356,9 @@ var chests = {
 	"Steampunk Showdown": [
 		["Rusted Sword", false, Vector2(300,600)],
 	],
+	"Town": [
+		
+	],
 }
 # each chest in the game will have a script referencing
 # GameData.chests[current_scene.locationInfo.locationName][chestNum]
@@ -330,13 +368,13 @@ var chests = {
 var inventory = [
 	[load("res://ItemLibrary/Elixir.tscn").instantiate(), 99],
 ]
-func add_to_inventory(i: Item):
+func add_to_inventory(i: Item, amt: int=1):
 	for item in inventory:
 		if item[0].title == i.title:
-			item[1] += 1
+			item[1] += amt
 			i.queue_free()
 			return
-	inventory.append([i, 1]) # items are only instantiated once in memory
+	inventory.append([i, amt]) # items are only instantiated once in memory
 																		  # paired with a counter
 
 
@@ -437,11 +475,11 @@ func _ready():
 	#locationInfo.addToEnemyPool("Iron Knight", 100)
 	#print(locationInfo.locationName, " Enemy Pool: ", locationInfo.enemyPool)
 
-
 func _process(delta):
-	if Input.is_key_pressed(KEY_I) and q[0]:
-		current_scene.get_node("Fade/AnimationPlayer").play("fadeout")
+	if Input.is_action_just_pressed("pause") and q[0]:
+		#current_scene.get_node("Fade/AnimationPlayer").play("fadeout")
 		pausing = true
+		Overlay.play("fadeout_menu")
 		#fadeout = true
 		#fadein = false
 		#pausing = true
@@ -453,11 +491,16 @@ func _process(delta):
 			#fadein = false
 	#if fadeout:
 		#fadeOut(current_scene, delta)
-	if pausing and current_scene.get_node("Fade").color.a >= 1:
+	if pausing and Overlay.color.a >= 1:
 		pause(current_scene)
 	
 	if Input.is_action_just_pressed("switch"):
 		GameData.rotateParty()
+	
+	if Input.is_action_just_pressed("confirm") and listening and !pausing:
+		if listening[0] is CharacterBody2D:
+			listening[0].speak()
+		# elif chest, elif door, ...
 
 signal pause_menu_open
 func pause(scene):
@@ -472,7 +515,7 @@ func pause(scene):
 	PauseMenu.camera().enabled = true
 	get_tree().paused = true
 	transition(0, 1)
-	PauseMenu.get_node("Fade/AnimationPlayer").play("fadein")
+	Overlay.play("fadein_menu")
 	pause_menu_open.emit()
 	#print("paused")
 
@@ -571,3 +614,9 @@ func enter_battle():
 	
 	# then in Battle.tscn._ready(), remove characters from GameData.party and add them to slots in Battle.party
 	pass
+
+
+## the objects the game treats as the "listener(s)" to the user pressing the confirm button.
+## if the user presses confirm and listening is not empty, it will trigger
+## the interaction for the front of the listening objects (listening[0])
+var listening = []

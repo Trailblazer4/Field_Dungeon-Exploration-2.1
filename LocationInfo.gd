@@ -11,6 +11,11 @@ var entryPoint: Vector2 = Vector2.ZERO # where was the party node when entering 
 var partyLocations: Array[Vector2] = [] # where were all of the party members (in relation to entryPoint)?
 var partyDirections: Array[Vector2] = [] # which direction were each of them facing?
 
+# if hostile, spawn enemies randomly around the player from time to time.
+# maybe have a timer that has random intervals, and when it goes off,
+# it spawn an enemy somewhere to start moving to start a battle when the player touches it.
+var hostile: bool = false
+
 func _init(ln: String, sln: String = ""):
 	locationName = ln
 	subLocationName = sln

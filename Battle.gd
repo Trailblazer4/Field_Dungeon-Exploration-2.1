@@ -112,11 +112,13 @@ func _process(delta):
 		elif q[4]:
 			var theresATarget = chooseScreen()
 			if theresATarget:
-				await thisTurn.get_child(0).use(chosenMove, target)
-				emit_signal("move_used")
-				stop_process = true
-				await get_node("Battle HUD/BattlePrompt").battle_continue
-				stop_process = false
+				var used = await thisTurn.get_child(0).use(chosenMove, target)
+				# TODO: design decision: should the prompt be skipped, or should it play but say "{name} is frozen!"?
+				if used != -1:
+					emit_signal("move_used")
+					stop_process = true
+					await get_node("Battle HUD/BattlePrompt").battle_continue
+					stop_process = false
 				if target.getHP() <= 0:
 					target.setHP(0)
 					#target.visible = false
@@ -356,7 +358,7 @@ func enemyTurn():
 				#priority_list[n] += (run_simulation(mf, mf.moveset[n], receiver, 1) / 100) # 1 means check damage amount
 				priority_list[n] += mf.use(mf.moveset[n], receiver, true) / 10
 	priority_sort(mf.moveset, priority_list)
-	mf.use(mf.moveset[0], receiver)
+	var used = mf.use(mf.moveset[0], receiver)
 	chosenMove = mf.moveset[0]
 	print(mf.myName, " used ", mf.moveset[0].title, " on ", receiver.myName, "!")
 	
@@ -365,10 +367,12 @@ func enemyTurn():
 	mf.setSP(mf.getSP() - mf.moveset[0].spReq)
 	decided = true
 	
-	emit_signal("move_used")
-	stop_process = true
-	await get_node("Battle HUD/BattlePrompt").battle_continue
-	stop_process = false
+	# TODO: design decision: should the prompt be skipped, or should it play but say "{name} is frozen!"?
+	if used != -1:
+		emit_signal("move_used")
+		stop_process = true
+		await get_node("Battle HUD/BattlePrompt").battle_continue
+		stop_process = false
 
 
 func priority_sort(moves, prios):
@@ -505,6 +509,12 @@ func done():
 		var returning = $Party.get_child(i).get_child(0)
 		$Party.get_child(i).remove_child(returning)
 		GameData.addToParty(returning, i)
+		for effect in returning.status_effects:
+			effect.call(returning, 1)
+		print("%s's statuses: " % returning.myName, returning.status_effects)
+		returning.status_effects.clear()
+		print("%s's statuses: " % returning.myName, returning.status_effects)
+		returning.info()
 	#get_tree().change_scene_to_packed(GameData.Levels[0])
 	get_tree().change_scene_to_packed(GameData.Levels[GameData.current_level])
 	for nme in enemies:

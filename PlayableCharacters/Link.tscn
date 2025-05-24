@@ -1,7 +1,14 @@
-[gd_scene load_steps=10 format=3 uid="uid://12efk2xug6a7"]
+[gd_scene load_steps=12 format=3 uid="uid://12efk2xug6a7"]
 
 [ext_resource type="Script" path="res://PlayableCharacters/Link.gd" id="1_rn70i"]
+[ext_resource type="Shader" path="res://PlayableCharacters/replace_color.gdshader" id="2_nfshs"]
 [ext_resource type="Texture2D" uid="uid://b0s6xurjot2g1" path="res://images/Link (NES).png" id="2_q46fs"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_21xwh"]
+shader = ExtResource("2_nfshs")
+shader_parameter/tolerance = 0.01
+shader_parameter/prev_color = Color(0.866667, 0.709804, 0.00784314, 1)
+shader_parameter/new_color = Color(0.878299, 1.44392e-06, 0.489489, 1)
 
 [sub_resource type="Animation" id="Animation_66nqg"]
 length = 0.001
@@ -102,6 +109,7 @@ script = ExtResource("1_rn70i")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_repeat = 2
+material = SubResource("ShaderMaterial_21xwh")
 scale = Vector2(2, 2)
 texture = ExtResource("2_q46fs")
 hframes = 3
@@ -113,5 +121,6 @@ libraries = {
 }
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(1, 0)
 shape = SubResource("RectangleShape2D_bv2e1")

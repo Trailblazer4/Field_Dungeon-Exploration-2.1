@@ -10,7 +10,8 @@ var selection = []
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	await init_screen()
-	$FadeWhite/AnimationPlayer.play("fadein")
+	#$FadeWhite/AnimationPlayer.play("fadein")
+	Overlay.play("fadein_menu")
 	
 	#GameData.party.addAt(GameData.ALL_PLAYABLE_CHARACTERS[0], 0)
 	#GameData.party.add(GameData.ALL_PLAYABLE_CHARACTERS[1])
@@ -76,9 +77,13 @@ func _process(delta):
 		print(selection)
 	
 	if Input.is_action_just_pressed("start") and $StartPrompt.visible:
-		$FadeWhite/AnimationPlayer.play("fadeout")
+		#$FadeWhite/AnimationPlayer.play("fadeout")
+		Overlay.play("fadeout_slow")
 		for i in range(len(selection)):
 			GameData.addToParty(selection[i], i)
+		var anim_name = await Overlay.finished()
+		if anim_name == "fadeout_slow":
+			GameData.travel_to(0, Vector2(250, 170), Vector2(1, 0))
 
 
 func add_portrait(index: int):

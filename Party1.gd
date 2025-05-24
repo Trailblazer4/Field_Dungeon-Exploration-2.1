@@ -11,7 +11,7 @@ signal history_updated
 # var stop_frames := STOP_DELAY
 
 var direction = Vector2(0, 1)
-
+var can_move: bool = true
 
 func _ready():
 	# var player2 = get_parent().get_child(1).position
@@ -30,6 +30,8 @@ func _physics_process(delta):
 	velocity.y = 0
 
 	var character_moved = false
+	
+	if !can_move: return
 
 	if Input.is_action_pressed("left"):
 		direction = Vector2(-1, 0)

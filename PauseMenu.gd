@@ -35,7 +35,8 @@ func on_pause_menu_open():
 
 
 func _ready():
-	$Fade.visible = true
+	#$Fade.visible = true
+	Overlay.get_node("AnimationPlayer").connect("animation_finished", _on_animation_player_animation_finished)
 	await get_tree().create_timer(2).timeout
 	#var player1_sprite = GameData.party.get_child(0).get_child(0)
 	#print(player1_sprite)
@@ -51,7 +52,8 @@ func _process(delta):
 		#pauseQ = 0
 
 	if done:
-		$Fade/AnimationPlayer.play("fadeout")
+		#$Fade/AnimationPlayer.play("fadeout")
+		Overlay.play("fadeout_menu")
 
 
 func camera():
@@ -59,7 +61,8 @@ func camera():
 
 
 func _on_animation_player_animation_finished(anim_name):
-	if anim_name == "fadeout":
+	print("doneee")
+	if anim_name == "fadeout_menu" and GameData.q[1]: # and GameData.q[1] is new
 		done = false
 		get_tree().paused = false
 		visible = false
@@ -73,4 +76,4 @@ func _on_animation_player_animation_finished(anim_name):
 		$Highlight.visible = true
 		$Sprites/Pointer.visible = false
 
-		current_scene.get_node("Fade/AnimationPlayer").play("fadein")
+		Overlay.play("fadein_menu")

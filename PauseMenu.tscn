@@ -178,5 +178,3 @@ position = Vector2(-67, 20)
 scale = Vector2(2, 2)
 texture = ExtResource("3_hh62g")
 script = ExtResource("4_66mc1")
-
-[connection signal="animation_finished" from="Fade/AnimationPlayer" to="." method="_on_animation_player_animation_finished"]

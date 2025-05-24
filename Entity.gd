@@ -264,7 +264,8 @@ func updateCounter(reset: bool = false):
 	if reset:
 		speedCounter = 0
 	else:
-		speedCounter += stats[6]
+		#speedCounter += stats[6]
+		speedCounter += getSpd()
 
 
 func checkHP():
@@ -274,6 +275,15 @@ func checkHP():
 
 
 func use(skill, target: Entity, test = false): # skill is of type Spell or Item
+	var can_go = true # for now "middle" effects just affect whether you can move.
+	for effect in status_effects:
+		var result = effect.call(self, 3)
+		#print("Can Go Result: ", result)
+		if result != null && result is bool: can_go = can_go && result
+	
+	if !test: print("Can Go: ", can_go) # testing can_go. works!
+	if !can_go and !test: return -1
+	
 	var og_hp = target.getHP()
 	var changes_to_apply: Array[Callable] = [] # this is the list of status changes that are recorded in handle statuses
 	# and is dealt with after the attack finishes
@@ -332,13 +342,19 @@ func use(skill, target: Entity, test = false): # skill is of type Spell or Item
 		target.setHP(target.getMaxHP())
 	target.health_bar.health = target.getHP()
 	#print("Dealing ", og_hp - target.getHP(), " damage on", target.myName, ". has mgdf ", target.getMgDf())
+	for effect in status_effects:
+		effect.call(self, 4)
 
 
 func handle_statuses(until: int, target: Entity, skill, dm: float, chance: Array[float], changes, test = false):
 	var go_back: int = 0
 	for i in range(until):
 		var status = target.status_effects[i - go_back]
-		var status_result = status.call(target, 4, skill)
+		var status_result = status.call(target, 5, skill)
+		if status_result == null:
+			print("i: ", i)
+			print("Go back: ", go_back)
+			print(target.status_effects)
 		if status_result[0]:
 			if status != GameData.StatusDictionary["Sick"]: # pop out statuses with special effects except for Sick
 				if !test:
@@ -360,3 +376,17 @@ func handle_statuses(until: int, target: Entity, skill, dm: float, chance: Array
 					target.status_effects.append(status_result[1])
 	print(chance)
 	return [dm, chance]
+
+
+
+
+
+
+'''
+
+normalizing size to 128 x 128?
+
+scale.x = 128 / $Sprite2D.texture.get_width()
+scale.y = 128 / $Sprite2D.texture.get_height()
+
+'''

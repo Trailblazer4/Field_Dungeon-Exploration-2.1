@@ -75,9 +75,9 @@ func makeItems(itemsList: Array):
 		newLine.get_node("ColorRect").color = defaultColor
 		newLine.get_node("HSplitContainer").z_index = 1
 		
-		print(itemsList[i][0].title, "\n", itemsList[i][1], "\n")
-		print(newLine.get_node("HSplitContainer/HSplitContainer/Name").text)
-		print(newLine.get_node("HSplitContainer/HSplitContainer/SP Req").text, "\n")
+		#print(itemsList[i][0].title, "\n", itemsList[i][1], "\n")
+		#print(newLine.get_node("HSplitContainer/HSplitContainer/Name").text)
+		#print(newLine.get_node("HSplitContainer/HSplitContainer/SP Req").text, "\n")
 		
 		if i > 8:
 			newLine.visible = false
