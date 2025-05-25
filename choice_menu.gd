@@ -1,6 +1,7 @@
 extends Control
 
 signal choice_selection(selection)
+signal answer(block_name)
 
 var cme = load("res://ChoiceMenuElement.tscn")
 var cursor: int = 0
@@ -15,8 +16,10 @@ var choices = []
 
 
 func _ready():
-	if get_parent().has_method("on_choice_selection"):
-		choice_selection.connect(get_parent().on_choice_selection)
+	#if get_parent().has_method("on_choice_selection"):
+		#choice_selection.connect(get_parent().on_choice_selection)
+	if get_parent().has_method("got_answer"):
+		answer.connect(get_parent().got_answer)
 
 
 func makeChoices(choice_list: Array):
@@ -56,6 +59,8 @@ func _process(delta):
 	
 	if Input.is_action_just_pressed("confirm") and len(choices) > 0:
 		choice_selection.emit(cursor)
+		answer.emit(choices[cursor])
+		print(choices[cursor])
 
 
 func updateCursor(upDir: int):

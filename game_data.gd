@@ -620,3 +620,13 @@ func enter_battle():
 ## if the user presses confirm and listening is not empty, it will trigger
 ## the interaction for the front of the listening objects (listening[0])
 var listening = []
+
+
+var flags = {
+	"Global": [
+		
+	],
+	"Town": [
+		false
+	],
+}

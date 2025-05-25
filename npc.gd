@@ -6,7 +6,8 @@ const SPEED = 50.0
 @export var walk_time: float = 3.0
 var can_move: bool = true
 @export var my_name: String = "Foo Bar"
-@export var messages: Array[Array]
+#@export var messages: Array[Array]
+@export var messages: Dictionary
 var walking = false
 var walk_dirs = [
 	Vector2.UP,
@@ -16,9 +17,28 @@ var walk_dirs = [
 ]
 var direction = Vector2.ZERO
 
-
+# TODO: try out conditions! Like \\\\if...
 func _ready():
 	$Timer.start(walk_time)
+	messages = {
+		"start": [
+			["You", {"Should I talk to Joe?": { "Yes": "y", "No": "n"} }],
+		],
+		"y": [
+			["Joe", "Hi there, \\\\party 1 name!"],
+			"\\\\give Sword x 1",
+			"\\\\romance Misty 10",
+			["Joe", {"How's it hangin', \\\\party 0 name?": { "Doing good!": "res0", "What's it to you?": "res1"} }]
+		],
+		"n": ["\\\\give Lion's Shield x 1"],
+		"res0": [
+			["Joe", "I see. That's good to hear!"],
+			"\\\\give Potion x 5"
+		],
+		"res1": [
+			["Joe", "How rude! Hmph!"]
+		]
+	}
 
 
 func _physics_process(delta):

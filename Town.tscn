@@ -83,14 +83,11 @@ tile_set = SubResource("TileSet_gawy1")
 
 [node name="NPC" parent="." instance=ExtResource("3_e8kkk")]
 position = Vector2(731, 288)
-messages = Array[Array]([["Hello there.", null]])
 
 [node name="NPC2" parent="." instance=ExtResource("3_e8kkk")]
 position = Vector2(886, 265)
 walk_time = 2.0
 my_name = "Allen Walker"
-messages = Array[Array]([["Nice day, huh?", null]])
 
 [node name="NPC3" parent="." instance=ExtResource("3_e8kkk")]
 position = Vector2(314, 488)
-messages = Array[Array]([[&"HEYYY!", ["Uh, hi?", "What do you want?"]], ["I'm crazy.", null]])

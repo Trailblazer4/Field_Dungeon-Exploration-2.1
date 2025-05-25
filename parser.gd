@@ -11,7 +11,9 @@ static func regex_from(pattern: String) -> RegEx:
 static var patterns: Dictionary = {
 	"party": regex_from("\\\\\\\\party (\\d+) ([a-zA-Z_]\\w*)( @\\d+)?"),
 	"give": regex_from("\\\\\\\\give (.+) x (\\d+)"),
-	"romance": regex_from("\\\\\\\\romance (.+) (\\d+)")
+	"romance": regex_from("\\\\\\\\romance (.+) (\\d+)"),
+	"flag": regex_from("\\\\\\\\flag (\\w[\\w ]*) (\\d+)"),
+	"if": regex_from("\\\\\\\\if \\\\\\\\flag (\\w[\\w ]*) (\\d+) (\\w[\\w ]*) \\| (\\w[\\w]*)")
 }
 
 # TODO: delete/comment out once deployed
@@ -24,6 +26,12 @@ static var commands = ["\\\\give", "\\\\romance"]
 static func process_cmd(cmd: String):
 	var first_word = cmd.substr(0, cmd.find(" "))
 	
+	# TODO: works like a charm! Make it so that there is a pop-up displaying the item(s),
+	# or the romance, etc.
+	# Or, maybe we can have a flag for each of these on whether a pop-up is displayed or dialogue just continues.
+	# This can help with having hidden effects like hidden romance boosts, or items added to your inventory naturally
+	# in a cutscene. But if we want there to be a pop-up, we can turn the flag on to say to put it.
+	# We can make this flag true by default to always show a pop-up unless a false flag indicates to make it hidden.
 	match first_word:
 		"\\\\party":
 			var srch = patterns["party"].search(cmd)
@@ -57,6 +65,17 @@ static func process_cmd(cmd: String):
 			if whom.begins_with("\\\\party"): whom = process_cmd(whom)
 			
 			print("You romanced %s by %d." % [whom, int(rom_amt)])
+		"\\\\flag":
+			# GameData will contain flags for events that have occurred. If predicate is satisfied,
+			# then go to a true condition, else to a false condition
+			# this command will return true or false on whether the given flag is true or false.
+			# there will be an \\\\if command that uses \\\\flag to check t/f values to do things,
+			# like get_jump(if_stmt) returning the right jump location from the if.
+			
+			var srch = patterns["flag"].search(cmd)
+			var where = srch.get_string(1)
+			var idx = int(srch.get_string(2))
+			return GameData.flags[where][idx]
 
 
 static func cleanup(messy_msg: String) -> String:
@@ -73,15 +92,27 @@ static func cleanup(messy_msg: String) -> String:
 	return messy_msg
 
 
-func _ready():
-	GameData.addToParty(GameData.ALL_PLAYABLE_CHARACTERS[0], 0)
-	GameData.addToParty(GameData.ALL_PLAYABLE_CHARACTERS[1], 1)
+static func get_jump(if_stmt: String):
+	var flag = process_cmd(if_stmt.substr(if_stmt.find("\\\\flag")))
+	var srch = patterns["if"].search(if_stmt)
+	var tt = srch.get_string(3)
+	var ff = srch.get_string(4)
+	
+	return tt if flag else ff
 
-	for line in example_lines:
-		if commands.any(func(w): return line.begins_with(w)):
-			process_cmd(line)
-		else:
-			print(cleanup(line))
+
+func _ready():
+	Overlay.color.a = 0
+	#GameData.addToParty(GameData.ALL_PLAYABLE_CHARACTERS[0], 0)
+	#GameData.addToParty(GameData.ALL_PLAYABLE_CHARACTERS[1], 1)
+	
+	print(get_jump("\\\\if \\\\flag Town 0 do | dont"))
+#
+	#for line in example_lines:
+		#if commands.any(func(w): return line.begins_with(w)):
+			#process_cmd(line)
+		#else:
+			#print(cleanup(line))
 	
 	#
 	#process_cmd("\\\\give Silver Sword x 0")
