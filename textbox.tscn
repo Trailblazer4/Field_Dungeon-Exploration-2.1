@@ -21,3 +21,18 @@ offset_bottom = 606.0
 theme_override_font_sizes/font_size = 24
 text = "I was wondering... why were you so enamored with him before? Could it be... you *like* him? Fufu."
 autowrap_mode = 3
+
+[node name="SpeakerName" type="ColorRect" parent="."]
+offset_left = 175.0
+offset_top = 489.0
+offset_right = 319.0
+offset_bottom = 529.0
+color = Color(0.00616771, 0.178821, 0.414177, 1)
+
+[node name="Label" type="Label" parent="SpeakerName"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 7.0
+offset_right = 134.0
+offset_bottom = 30.0
+text = "Crimson"

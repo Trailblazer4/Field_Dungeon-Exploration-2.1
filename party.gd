@@ -16,6 +16,13 @@ func member(i: int):
 	return slot(i).get_child(0)
 
 
+func find(by_name: String):
+	for mem in viewMembers():
+		if mem.myName == by_name:
+			return mem
+	return null
+
+
 # adds a character to the end of the party. returns true if successful and
 # false if the party is full
 # for moving characters into a potentially full party, see Party.addAt(Entity, int) and

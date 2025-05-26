@@ -2,8 +2,8 @@ extends CanvasLayer
 
 class_name Textbox
 
-# TODO: add CONDITION LineType. this would be a line that checks for a condition,
-# and if true goes to one block, otherwise goes to the second block (a branch, basically).
+signal finished_line
+
 ## the possible types of line encountered in dialogue.
 ## LINE is a normal line spoken by a character.
 ## CHOICE contains a line of dialogue followed by a choice to be made by the player, branching conversations out.
@@ -13,8 +13,12 @@ enum LineType {
 	CHOICE,
 	COMMAND,
 	CONDITION,
+	JUMP,
+	FLAG,
 	ERROR
 }
+
+var SCREEN_CENTER = DisplayServer.screen_get_size() / 2 # i dont think this works
 
 ## returns the type of line read, or an error.
 ## a proper line of dialogue is an Array containing a name (for the speaker of the line),
@@ -23,12 +27,14 @@ enum LineType {
 static func line_type(ln: Variant) -> LineType:
 	## LINE, CHOICE, COMMAND, ERROR
 	if ln is Array:
-		match typeof(ln[1]):
-			TYPE_STRING: return LineType.LINE
-			TYPE_DICTIONARY: return LineType.CHOICE
+		match len(ln):
+			2: return LineType.LINE
+			3: return LineType.CHOICE
 			_: return LineType.ERROR
 	else:
 		if ln.begins_with("\\\\if"): return LineType.CONDITION
+		if ln.begins_with("\\\\jump"): return LineType.JUMP
+		if ln.begins_with("\\\\flag"): return LineType.FLAG
 		if ln.begins_with("\\\\"): return LineType.COMMAND
 		return LineType.ERROR
 
@@ -55,6 +61,7 @@ var choice_map: Dictionary = {}
 var bound_to
 
 func label(): return get_child(1)
+func set_speaker(nm: String): get_child(2).get_child(0).text = nm
 
 static var tb_tscn = load("res://textbox.tscn")
 static func from(messages: Dictionary, npc):
@@ -93,10 +100,15 @@ func _process(delta):
 	scroll_text()
 
 
+var finished = false
 func scroll_text():
 	if scroll_progress < prompt.length():
+		finished = false
 		label().text = prompt.substr(0, scroll_progress + scroll_speed)
 		scroll_progress += scroll_speed
+	elif !finished:
+		finished = true
+		finished_line.emit()
 
 
 func finish_scroll():
@@ -115,8 +127,9 @@ func jump(new_block: String):
 	scroll_progress = 0
 
 
-func add_choice_menu(line, dialogue):
-	choice_map = line[dialogue]
+func add_choice_menu(ch):
+	await finished_line
+	choice_map = ch
 	choices = choice_map.keys()
 	choice_menu = load("res://ChoiceMenu.tscn").instantiate()
 	choice_menu.makeChoices(choices)
@@ -128,23 +141,41 @@ func process_prompt():
 	if prompt_idx >= len(convo_blocks[curr_block]): close(); return
 	
 	var line_info = convo_blocks[curr_block][prompt_idx]
-	var nm = line_info[0]
-	var ln = line_info[1]
-	match line_type(line_info):
+	
+	var lin_typ = line_type(line_info)
+	
+	if get_child(0).visible == (lin_typ == LineType.COMMAND):
+		toggle_display()
+	
+	match lin_typ:
 		LineType.LINE:
+			var nm = line_info[0]
+			var ln = line_info[1]
+			set_speaker(nm)
 			prompt = Parser.cleanup(ln)
 			scroll_progress = 0
 		LineType.CHOICE:
-			var dialogue = ln.keys()[0]
-			prompt = Parser.cleanup(dialogue)
+			var nm = line_info[0]
+			var ln = line_info[1]
+			var ch = line_info[2]
+			set_speaker(nm)
+			prompt = Parser.cleanup(ln)
 			scroll_progress = 0
-			add_choice_menu(ln, dialogue)
+			add_choice_menu(ch)
 		LineType.COMMAND:
-			Parser.process_cmd(line_info)
+			var popup = Parser.process_cmd(line_info)
+			add_child(popup)
+			popup.position = Vector2(575 - (popup.size.x / 2), 150)
+			#prompt_idx += 1 maybe have a boolean to control whether this happens automatically or not
+			#process_prompt()
+		LineType.CONDITION, LineType.JUMP:
+			var jump_loc = Parser.get_jump(line_info)
+			print("Jumping to: ", jump_loc)
+			jump(jump_loc)
+		LineType.FLAG:
+			print(Parser.process_cmd(line_info))
 			prompt_idx += 1
 			process_prompt()
-		LineType.CONDITION:
-			jump(convo_blocks[Parser.get_jump(line_info)])
 		_:
 			print("Err")
 
@@ -171,3 +202,8 @@ func close():
 	GameData.current_scene.remove_child(self)
 	GameData.current_scene.interaction = null
 	queue_free()
+
+
+func toggle_display():
+	for child in get_children():
+		child.visible = !child.visible

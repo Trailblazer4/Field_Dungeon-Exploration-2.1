@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3 uid="uid://x0idengw1ixq"]
+
+[ext_resource type="Script" path="res://popup.gd" id="1_cl2cv"]
+
+[node name="Popup" type="ColorRect"]
+offset_right = 474.0
+offset_bottom = 302.0
+color = Color(9.62615e-08, 0.46856, 0.358526, 1)
+script = ExtResource("1_cl2cv")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 13.0
+offset_top = 63.0
+offset_right = 461.0
+offset_bottom = 164.0
+theme_override_font_sizes/font_size = 28
+text = "You received (a) Master Sword."
+autowrap_mode = 3

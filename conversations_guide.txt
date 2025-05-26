@@ -1,0 +1,288 @@
+Welcome to the Twined Action System!
+
+This system is meant to make creating dialogue as simple as possible and as specific as it needs to be.
+
+Dialogue can display lines of speech next to the name of a speaker,
+but can also contain special commands to reference in-game variables, perform control flow branches,
+jump to different parts of conversation, and check/modify in-game flags.
+
+
+
+--Simple Dialogue--
+Let's first cover how to perform simple speech.
+Let's get a character named "Doros" to say "How do you do today?"
+
+In the conversations.json file, you will find all of the current in-game conversations
+saved in this format:
+{
+	"person_0 name": {
+		...
+	},
+	"person_1 name": {
+		...
+	},
+	...
+}
+The outermost curly braces contain all of the dialogue in the game as a single map.
+Add a new entry to the map by putting "Doros", then a `:`, and finally some curly braces.
+{
+	...other data up here...
+	"Doros": {
+		
+	}
+}
+
+If you get an error, you might have to put a comma after the closing curly brace of
+the previous entry.
+
+Now, we must define conversation blocks for Doros. These blocks represent different parts of conversation
+that may/may not be reached depending on conditions (like whether a choice was selected,
+or whether a flag was triggered earlier).
+
+For now, we will use the simplest example,
+which is using a "start" block to start the conversation. Place an entry in Doros' value
+containing "start" as the key, and a list as the value.
+{
+	...,
+	"Doros": {
+		"start": [
+			
+		]
+	}
+}
+
+The list associated with the "start" block contains the dialogue to be spoken as soon as the
+conversation starts. Add a line of dialogue to this list.
+
+How do we write a line of dialogue? Is it just a string?
+Almost!
+We want to pair the piece of dialogue we write (as a string) with the name of the speaker.
+The speaker might be the NPC, but could also be another member of dialogue like a player character.
+For example:
+["name", "Stuff they're saying."]
+
+So, all together, let's add a line of dialogue to our current data:
+{
+	...,
+	"Doros": {
+		"start": [
+			["Doros", "How do you do today?"]
+		]
+	}
+}
+
+And that's it! With that, you've added a piece of dialogue to the game for a named character.
+The game programming will handle binding this dialogue to the right character as long as
+you've provided the correct name.
+
+That's the tutorial for adding new characters and starting to write dialogue blocks.
+
+
+
+--Choices--
+In life, we must often make choices, and that is no different for the players of our game!
+Let's take a look at how to give the player a choice for how they respond to something
+a character says.
+
+Do you remember what a normal line of dialogue looks like?
+["name", "dialogue spoken goes here."]
+
+All we need to do to allow for a choice is add one more element to this list:
+["name", "dialogue spoken goes here.", {"option 1": "result 1", "option 2": "result 2", ..., "option n": "result n"}]
+
+In this example, we create a "map" of choices. The keys in this map represent the choices the player
+gets to make in dialogue, while the values associated with each key show which block of dialogue
+will be entered upon that choice.
+
+So, we need to also create blocks for each choice. So far, we've only talked about using the "start" block.
+Let's name some more blocks after the "start" block list is finished.
+{
+	...,
+	"Doros": {
+		"start": [
+			["Doros", "How do you do today?"],
+			["Doros", "Geez, don't you feel hot under all that armor?", {"Eh, I've felt worse, I suppose.": "normal", "Thanks, but not as hot as you. Hee hee.": "flirty"}]
+		],
+		"normal": [
+			["Doros", "Well, if you say so."]
+		],
+		"flirty": [
+			["Doros", "H-huh? Y-you dummy... What are you talking about?"]
+		]
+	}
+}
+
+So whether you'd like to keep casual conversation or get a little spicy, you will be shown
+a fitting response.
+
+Look at that! We knocked out choices and separate conversation blocks in the same lesson! You're on a roll!
+That's it for this time. Bye!
+
+
+
+--Commands--
+The Twined Action System contains some special commands for triggering changes in game
+like adding an item to the inventory, or increasing stats for characters.
+
+Let's start with adding an item to the inventory:
+"\\\\give item_name x item_amt"
+
+Sorry about the egregious number of backslashes, I swear they're there for a reason!
+But if you can get behind writing that every time, then writing these actions should not be too bad!
+
+"\\\\give Primal x 64"
+This commands will place 64 of the "Primal" item in the inventory (though please don't do that,
+there is only one Primal and it's owned by Zack!).
+
+But if you must see it used in action:
+{
+	"Xanaros": {
+		"start": [
+			["Xanaros", "Zack, I know you're an adult and you can take care of yourself."],
+			["Xanaros", "But it's dangerous to go alone. Take this!"],
+			"\\\\give Primal x 1",
+			["Xanaros", "Good luck out there. And be home by dinner!"]
+		]
+	}
+}
+
+Pretty cool, right?
+
+Let's look at another command to increase your bond with another character:
+"\\\\romance Rosa 10"
+
+This will strenghten your bond with Rosa by 10 whole points! You must've done
+something real nice to score that.
+
+But what if I just want to increase the characters' friendship? Well, I'm not
+coding a whole other command name for that, so for all intents and purposes
+use \\\\romance to affect relationships between the protagonist and other characters
+(at least for now. This is subject to change as relationships between side characters
+will likely become a feature in our games).
+
+Here's one more format for extracting in-game variables using command-like syntax:
+"\\\\party index field"
+
+This will extract a field's, or variable's, value from the party member asked,
+by finding the character at that index.
+
+"\\\\party 0 name"
+
+This will give us the name of the first character in our party (party member 0).
+
+"\\\\party 3 stats"
+
+This will show us the stat board for party member 3 (which is 4).
+But what if I want to specifically get the first stat from this (the hp stat)?
+
+"\\\\party 3 stats @0"
+
+That's it.
+
+So we can do something like:
+{
+	"Zack": {
+		"start": [
+			["Zack", "Hey, \\\\party 1 name, can I talk to you a bit about \\\\party 2 name?"]
+		]
+	}
+}
+
+And there we go for commands. See ya!
+
+
+
+--Flags--
+We can check conditions to trigger different pieces of dialogue.
+For example, let's say we're in Central City and we want to see if a specific key item has been collected
+then we will obtain an item from a conversation. Otherwise, we get some other dialogue.
+
+The flag for this can be queried like:
+"\\\\flag Central City::Global::14"
+Or wherever this flag is categorized (you will have to find the flag you are checking).
+In this case, I'm saying there are some global flags that are not necessarily tied to any one NPC,
+and this is flag number 14.
+
+Then, I can check whether the flag is true (has this key item been collected?):
+"\\\\if checked_flag {true_condition | false_condition}"
+
+checked_flag is the flag we are checking. true_condition will be the conversation block entered
+if this is true, otherwise false_condition is entered.
+
+So, putting this all together:
+"\\\\if \\\\flag Central City::Global::14 {get_item | not_allowed}"
+
+Let's create a conversation using this knowledge:
+{
+	"Yan": {
+		"start": [
+			"\\\\if \\\\flag Central City::Global::14 {get_item | not_allowed}"
+		],
+		"get_item": [
+			"\\\\if \\\\flag Central City::Yan::0 {already_has | receive}"
+		],
+		"not_allowed": [
+			["Yan", "..."]
+		],
+		"already_has": [
+			["Yan", "Hm? What else do you need?"]
+		],
+		"receive": [
+			["Yan", "Oh? I see you've found that. Here, take this."],
+			["Yan", "Here, take this."],
+			"\\\\give Elixir x 3"
+		]
+	}
+}
+
+Phew! That was a bit tough, huh? We not only accessed a global flag for the key item,
+but another flag associated directly with the NPC Yan to check if he has been spoken to yet.
+
+That's it for \\\\if and \\\\flag. Have fun!
+
+
+
+--Jump---
+This section will be short and to the point.
+Using a \\\\jump command, you can automatically redirect a conversation
+from one block to another.
+
+This can be useful if you need 2 different choices to always end up going to the same block.
+Think of this as two possible timelines "converging" into a single timeline at some point.
+
+Here's an example:
+{
+	"Doros": {
+		"start": [
+			["Doros", "Nice weather today, huh?", {"Yeah!": "res0", "Nah...": "res1"}]
+		],
+		"res0": [
+			["Doros", "Makes you want to go to the beach, doesn't it?"],
+			"\\\\jump end"
+		],
+		"res1": [
+			["Doros", "Oh, not feelin' it today?"],
+			"\\\\jump end"
+		],
+		"end": [
+			["Doros", "Well, I think I'll head off to the beach and get some ice cream."],
+			["Doros", "Let me know if you end up tagging along!"]
+		]
+	}
+}
+
+Or this:
+{
+	"Doros": {
+		"start": [
+			["Doros", "Do you need the tutorial?", {"Yes": "response", "No": "skip"}]
+		],
+		"response": [
+			["Doros", "Tutorial tutorial tutorial..."],
+			"\\\\jump skip"
+		],
+		"skip": [
+			["Doros", "Alright, then let's get to it!"]
+		]
+	}
+}

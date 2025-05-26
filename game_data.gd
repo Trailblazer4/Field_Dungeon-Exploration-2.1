@@ -623,10 +623,17 @@ var listening = []
 
 
 var flags = {
-	"Global": [
+	"Global": {
 		
-	],
-	"Town": [
-		false
-	],
+	},
+	"Town": {
+		"Joe": [
+			false, # have you gotten sword
+			true, # have you gotten potions
+			false # have you bonded with Link
+		],
+		"Jill": [
+			
+		],
+	},
 }

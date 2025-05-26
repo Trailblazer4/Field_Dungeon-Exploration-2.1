@@ -17,26 +17,42 @@ var walk_dirs = [
 ]
 var direction = Vector2.ZERO
 
-# TODO: try out conditions! Like \\\\if...
+# TODO: try \\\\jump to merge blocks back into a single conversation (diamond shape control flow)
 func _ready():
 	$Timer.start(walk_time)
 	messages = {
 		"start": [
-			["You", {"Should I talk to Joe?": { "Yes": "y", "No": "n"} }],
+			["You", "Should I talk to Joe?", {"Yes": "y", "No": "n"}],
 		],
 		"y": [
 			["Joe", "Hi there, \\\\party 1 name!"],
+			"\\\\if \\\\flag Town::Joe::0 y2 | y1"
+		],
+		"y1": [
 			"\\\\give Sword x 1",
 			"\\\\romance Misty 10",
-			["Joe", {"How's it hangin', \\\\party 0 name?": { "Doing good!": "res0", "What's it to you?": "res1"} }]
+			"\\\\flag Town::Joe::0 flip",
+			"\\\\jump y2"
 		],
-		"n": ["\\\\give Lion's Shield x 1"],
+		"y2": [
+			["Joe", "How's it hangin', \\\\party 0 name?", {"Doing good!": "res0", "What's it to you?": "res1"}]
+		],
+		"n": [], #["\\\\give Lion's Shield x 1"],
 		"res0": [
 			["Joe", "I see. That's good to hear!"],
-			"\\\\give Potion x 5"
+			"\\\\give Potion x 5",
+			["Link", "..."],
+			["Link", "So you thought I couldn't speak?", {"Uh, yeah?": "link0", "Of course not!": "link1"}]
 		],
 		"res1": [
 			["Joe", "How rude! Hmph!"]
+		],
+		"link0": [
+			["Link", "Damn, ok."]
+		],
+		"link1": [
+			["Link", "Hmm, ok."],
+			"\\\\romance Link 7"
 		]
 	}
 
