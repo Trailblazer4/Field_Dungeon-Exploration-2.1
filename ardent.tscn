@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://dl8fo8euguew0"]
+
+[sub_resource type="Curve" id="Curve_ywyo1"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.112861, 0.171199), -1.53347, -1.53347, 0, 0, Vector2(0.414698, 0.0321), 0.0, 0.0, 0, 0, Vector2(0.72, 0.00514758), 0.356438, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="Gradient" id="Gradient_wqqtk"]
+offsets = PackedFloat32Array(0, 0.0804954, 0.157895, 0.216718)
+colors = PackedColorArray(1, 0.287306, 0.225237, 1, 0.922309, 0.433946, 0.107047, 1, 1, 0.728748, 0.207777, 1, 0.978614, 0.967854, 0.473672, 1)
+
+[node name="Ardent" type="CPUParticles2D"]
+amount = 3000
+randomness = 0.16
+emission_shape = 1
+emission_sphere_radius = 9.66
+direction = Vector2(0, -1)
+spread = 0.0
+gravity = Vector2(0, -400)
+initial_velocity_min = 9.57
+initial_velocity_max = 89.01
+radial_accel_min = -81.82
+radial_accel_max = -33.5
+scale_amount_max = 2.0
+scale_amount_curve = SubResource("Curve_ywyo1")
+color_ramp = SubResource("Gradient_wqqtk")

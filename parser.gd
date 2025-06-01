@@ -16,10 +16,10 @@ static func regex_from(pattern: String) -> RegEx:
 # if has spell or move can be handled separately as well such as \\\\learned skill
 static var patterns: Dictionary = {
 	"party": regex_from("\\\\\\\\party (\\d+) ([a-zA-Z_]\\w*)(?: ?@(\\d+))?"),
-	"give": regex_from("\\\\\\\\give (.+) x (\\d+)"),
-	"romance": regex_from("\\\\\\\\romance (.+) (\\d+)"),
+	"give": regex_from("\\\\\\\\give (.+) x (\\d+)( hide)?"),
+	"romance": regex_from("\\\\\\\\romance (.+) (\\d+)( hide)?"),
 	"flag": regex_from("\\\\\\\\flag (\\w[\\w ]*)::(\\w[\\w ]*)::(\\d+)( flip)?"),
-	"if": regex_from("\\\\\\\\if ([\\w: \\\\\\?<>=@\\.]+)\\s*{\\s*(\\w[\\w ]*?)\\s*\\|\\s*(\\w[\\w ]*?)\\s*}"),
+	"if": regex_from("\\\\\\\\if(?:( !\\s*)|\\s+)([\\w: \\\\\\?<>=@\\.]+)\\s*{\\s*(\\w[\\w ]*?)\\s*\\|\\s*(\\w[\\w ]*?)\\s*}"),
 	"jump": regex_from("\\\\\\\\jump (\\w[\\w ]*)"),
 	"has": regex_from("\\\\\\\\has ([\\w\\\\][\\w\\\\@ ]*\\w)(?: ([<>=])(=)?x (\\d+))?"),
 	"stronger": regex_from("\\\\\\\\stronger ([\\w\\\\][\\w\\\\ ]*?)\\s+v\\s+([\\w\\\\][\\w\\\\ ]*?)\\s+\\.([a-zA-Z_]\\w*)(?: ?@(\\d+))?"),
@@ -53,18 +53,24 @@ static func process_cmd(cmd: String):
 			
 			var member: Entity = GameData.party.member(int(idx))
 			
+			var field_val = member if field == "self" else member.get(field)
+			
 			if !field_idx.is_empty():
-				return member.get(field)[int(field_idx)]
+				return field_val[int(field_idx)]
 			else:
-				return member.get(field)
+				return field_val
 		
 		"\\\\give":
 			var srch = patterns["give"].search(cmd)
 			var item_name = srch.get_string(1)
 			var item_amt = int(srch.get_string(2))
+			var hidden: bool = srch.get_string(3) != ""
 			
 			#GameData.add_to_inventory(item_name, int(item_amt)) # in progress
 			print("You added %s %s%s to your inventory." % [str(item_amt), item_name, "s" if item_amt != 1 else ""])
+			
+			if hidden: return null
+			
 			var item_popup = load("res://popup.tscn").instantiate()
 			var maybe_plural = ["", ""]
 			if item_amt != 1:
@@ -79,10 +85,14 @@ static func process_cmd(cmd: String):
 			
 			var whom = srch.get_string(1)
 			var rom_amt = int(srch.get_string(2))
+			var hidden: bool = srch.get_string(3) != ""
 			
 			if whom.begins_with("\\\\party"): whom = process_cmd(whom)
 			
 			print("You romanced %s by %d." % [whom, rom_amt])
+			
+			if hidden: return null
+			
 			var rom_popup = load("res://popup.tscn").instantiate()
 			rom_popup.get_child(0).text = "You got closer to %s." % whom
 			return rom_popup
@@ -198,8 +208,9 @@ static func get_jump(stmt: String):
 		flag = process_cmd(stmt.substr(flag))
 		
 		var srch = patterns["if"].search(stmt)
-		var tt = srch.get_string(2)
-		var ff = srch.get_string(3)
+		if srch.get_string(1): flag = !flag
+		var tt = srch.get_string(3)
+		var ff = srch.get_string(4)
 	
 		return tt if flag else ff
 	elif stmt.begins_with("\\\\jump"):
@@ -233,10 +244,12 @@ func _ready():
 	#print(process_cmd("\\\\flag Town::Joe 0 flip"))
 	#print(get_jump("\\\\if \\\\flag Town::Joe 0 y2 | y1"))
 	
-	#GameData.addToParty(GameData.ALL_PLAYABLE_CHARACTERS[0], 0)
-	#GameData.addToParty(GameData.ALL_PLAYABLE_CHARACTERS[1], 1)
-	#GameData.addToParty(GameData.ALL_PLAYABLE_CHARACTERS[2], 2)
-	#GameData.party.member(2).stats[1] += 1
+	GameData.addToParty(GameData.ALL_PLAYABLE_CHARACTERS[0], 0)
+	print(GameData.party.member(0))
+	GameData.addToParty(GameData.ALL_PLAYABLE_CHARACTERS[1], 1)
+	GameData.addToParty(GameData.ALL_PLAYABLE_CHARACTERS[2], 2)
+	GameData.party.member(2).stats[1] += 1
+	print(process_cmd("\\\\party 0 self @0"))
 	#process_cmd("\\\\stronger \\\\party 0 name v \\\\party 1 name .stats @1")
 	#print(get_jump("\\\\if \\\\stronger Cinnamoroll v Misty .stats @0 { a | b }"))
 	#print(get_jump("\\\\if \\\\stronger Link v Cinnamoroll .stats @1 { a | b }"))

@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://bcvmqdpkko1ei"]
+[gd_scene load_steps=18 format=3 uid="uid://bcvmqdpkko1ei"]
 
 [ext_resource type="Script" path="res://Battle.gd" id="1_i6x73"]
 [ext_resource type="Script" path="res://Party1Battle.gd" id="3_xkxwl"]
@@ -11,6 +11,8 @@
 [ext_resource type="PackedScene" uid="uid://suhyoxj47luv" path="res://health_bar.tscn" id="9_xdigg"]
 [ext_resource type="PackedScene" uid="uid://dhs3bwej8wvx4" path="res://battle_prompt.tscn" id="10_2o6qr"]
 [ext_resource type="Script" path="res://battle_prompt.gd" id="11_rvruc"]
+[ext_resource type="PackedScene" uid="uid://cjcdx08xj617v" path="res://Ard.tscn" id="12_xcd8a"]
+[ext_resource type="Script" path="res://example.gd" id="13_x5nxb"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_jkaca"]
 
@@ -166,3 +168,8 @@ script = ExtResource("11_rvruc")
 
 [node name="Timer" type="Timer" parent="Battle HUD/BattlePrompt"]
 wait_time = 3.0
+
+[node name="Ard" parent="." instance=ExtResource("12_xcd8a")]
+position = Vector2(786, 143)
+scale = Vector2(2, 2)
+script = ExtResource("13_x5nxb")

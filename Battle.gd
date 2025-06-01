@@ -22,7 +22,19 @@ var turnOrder = []
 var thisTurn
 var turnSet: bool = false
 
+@export var debug_mode: bool = false
+
+
 func _ready():
+	if debug_mode:
+		#Overlay.play("fadein_zone")
+		#
+		#await Overlay.anim.animation_finished
+		##Overlay.emit_signal("change_color", Color("#387aff70"))
+		#Overlay.emit_signal("change_color", Color("ff999970"))
+		
+		return
+	
 	print(GameData.q)
 	print("Character: ", GameData.ALL_PLAYABLE_CHARACTERS[0])
 	# set background to whatever locationInfo/subLocationInfo tells you is the location of the battle
@@ -60,7 +72,7 @@ var chosenMove = null # what move or item specifically?
 
 var stop_process = false
 func _process(delta):
-	if stop_process:
+	if debug_mode || stop_process:
 		return
 
 	# instant battle end

@@ -26,7 +26,7 @@ func _ready():
 		],
 		"y": [
 			["Joe", "Hi there, \\\\party 1 name!"],
-			"\\\\if \\\\flag Town::Joe::0 y2 | y1"
+			"\\\\if \\\\flag Town::Joe::0 {y2 | y1}"
 		],
 		"y1": [
 			"\\\\give Sword x 1",
@@ -52,7 +52,7 @@ func _ready():
 		],
 		"link1": [
 			["Link", "Hmm, ok."],
-			"\\\\romance Link 7"
+			"\\\\romance Link 7 hide"
 		]
 	}
 

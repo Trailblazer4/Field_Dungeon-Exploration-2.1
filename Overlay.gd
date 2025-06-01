@@ -2,6 +2,9 @@ extends ColorRect
 
 
 @onready var anim: AnimationPlayer = get_child(0)
+signal change_color(color)
+signal change_back
+
 
 func play(anim_name):
 	anim.play(anim_name)
@@ -18,11 +21,18 @@ func scaleTo(screen: Vector2):
 	size = screen * 1.3
 
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	change_color.connect(on_change_color)
+	change_back.connect(on_change_back)
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	pass
+
+
+func on_change_color(c: Color):
+	create_tween().tween_property(self, "color", c, 0.75)
+
+
+func on_change_back():
+	create_tween().tween_property(self, "color", Color(0), 0.75)

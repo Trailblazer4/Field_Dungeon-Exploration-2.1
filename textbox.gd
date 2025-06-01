@@ -164,10 +164,12 @@ func process_prompt():
 			add_choice_menu(ch)
 		LineType.COMMAND:
 			var popup = Parser.process_cmd(line_info)
-			add_child(popup)
-			popup.position = Vector2(575 - (popup.size.x / 2), 150)
-			#prompt_idx += 1 maybe have a boolean to control whether this happens automatically or not
-			#process_prompt()
+			if popup:
+				add_child(popup)
+				popup.position = Vector2(575 - (popup.size.x / 2), 150)
+			else:
+				prompt_idx += 1 # maybe have a boolean to control whether this happens automatically or not
+				process_prompt()
 		LineType.CONDITION, LineType.JUMP:
 			var jump_loc = Parser.get_jump(line_info)
 			print("Jumping to: ", jump_loc)

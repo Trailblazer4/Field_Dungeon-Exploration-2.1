@@ -1,0 +1,31 @@
+I want to make a class to generalize/contain magic animations.
+
+Magic animations can start in a places:
+	- start at player and shoot toward target (fireball)
+	- start at target and stay there (ice block summoned around them,
+	pillar of fire surrounding them.)
+	- start in the middle of the screen? (black hole sucks everything in)
+	- causes a screen effect (Ultima from FFVII)
+
+This class is:
+	Node2D
+	|	AnimationPlayer
+	|	Variant
+where the Variant is decided by a selected enum.
+
+The enum tells us whether it is a shot, stationary, or middle.
+
+Have a second enum to determine single- or multi-target (get more into this later,
+focus on first part first).
+
+enum SpellAnim {
+	SHOT,
+	STATIONARY,
+	MIDDLE
+}
+
+var start # describes what position to start at
+var fin # describes what position to travel to
+
+var subject # the object being animated. may be a particle system for fire,
+			# a sprite for representing ice, etc.
