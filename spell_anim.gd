@@ -20,8 +20,11 @@ var fin: Vector2
 var subject
 var type: Anim
 
+signal begin
 signal appear
 signal move
+signal impact # when it hits the enemy
+signal finished
 
 # Constructors (Rust-like)
 

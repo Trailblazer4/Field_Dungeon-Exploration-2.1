@@ -26,14 +26,9 @@ var turnSet: bool = false
 
 
 func _ready():
-	if debug_mode:
-		#Overlay.play("fadein_zone")
-		#
-		#await Overlay.anim.animation_finished
-		##Overlay.emit_signal("change_color", Color("#387aff70"))
-		#Overlay.emit_signal("change_color", Color("ff999970"))
-		
-		return
+	Overlay.scaleTo(Vector2(1200, 700))
+	Overlay.play("fadein_menu")
+	if debug_mode: return
 	
 	print(GameData.q)
 	print("Character: ", GameData.ALL_PLAYABLE_CHARACTERS[0])
@@ -73,6 +68,11 @@ var chosenMove = null # what move or item specifically?
 var stop_process = false
 func _process(delta):
 	if debug_mode || stop_process:
+		if Input.is_action_just_pressed("ui_accept"):
+			var ardent = load("res://ard_2.tscn").instantiate()
+			ardent.position = Vector2(786, 143)
+			ardent.scale = Vector2(2, 2)
+			add_child(ardent)
 		return
 
 	# instant battle end

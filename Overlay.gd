@@ -18,7 +18,8 @@ func finished():
 
 
 func scaleTo(screen: Vector2):
-	size = screen * 1.3
+	size = screen * 3
+	position = Vector2.ZERO - (size / 2)
 
 
 func _ready():
@@ -31,8 +32,9 @@ func _process(delta):
 
 
 func on_change_color(c: Color):
-	create_tween().tween_property(self, "color", c, 0.75)
+	color = c
+	create_tween().tween_property(self, "color:a", c.a, 0.75).from(0)
 
 
 func on_change_back():
-	create_tween().tween_property(self, "color", Color(0), 0.75)
+	create_tween().tween_property(self, "color:a", 0, 1.5)

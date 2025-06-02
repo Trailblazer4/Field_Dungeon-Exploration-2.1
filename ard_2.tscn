@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3 uid="uid://gxyxlct6xd0p"]
+
+[ext_resource type="Script" path="res://example.gd" id="1_asy1h"]
+
+[sub_resource type="Curve" id="Curve_bnmau"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.503937, 0.714076), 0.0, 0.0, 0, 0, Vector2(0.986877, 0.384583), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Gradient" id="Gradient_adv0c"]
+offsets = PackedFloat32Array(0, 0.74613, 0.900929)
+colors = PackedColorArray(0.931537, 0.881686, 0.457874, 1, 1, 0.254843, 0.295663, 1, 1, 0.254902, 0.294118, 0)
+
+[node name="Ard2" type="CPUParticles2D"]
+amount = 30000
+lifetime = 0.5
+emission_shape = 1
+emission_sphere_radius = 10.0
+direction = Vector2(0, 0)
+gravity = Vector2(500, 0)
+radial_accel_min = -50.0
+radial_accel_max = 98.33
+scale_amount_min = 0.3
+scale_amount_max = 2.0
+scale_amount_curve = SubResource("Curve_bnmau")
+color_ramp = SubResource("Gradient_adv0c")
+script = ExtResource("1_asy1h")

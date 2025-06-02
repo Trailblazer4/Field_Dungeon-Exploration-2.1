@@ -5,19 +5,19 @@ _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.112861, 0.171199), -1.53347, -
 point_count = 4
 
 [sub_resource type="Gradient" id="Gradient_wqqtk"]
-offsets = PackedFloat32Array(0, 0.0804954, 0.157895, 0.216718)
-colors = PackedColorArray(1, 0.287306, 0.225237, 1, 0.922309, 0.433946, 0.107047, 1, 1, 0.728748, 0.207777, 1, 0.978614, 0.967854, 0.473672, 1)
+offsets = PackedFloat32Array(0, 0.0433437, 0.195046, 0.275542, 0.340557)
+colors = PackedColorArray(0.978614, 0.967854, 0.473672, 1, 1, 0.728748, 0.207777, 1, 1, 0.287306, 0.225237, 1, 0.922309, 0.433946, 0.107047, 1, 0.921569, 0.435294, 0.105882, 0)
 
-[node name="Ardent" type="CPUParticles2D"]
-amount = 3000
+[node name="Fireball (Conflagration)" type="CPUParticles2D"]
+amount = 16000
+lifetime = 0.8
 randomness = 0.16
 emission_shape = 1
-emission_sphere_radius = 9.66
-direction = Vector2(0, -1)
-spread = 0.0
-gravity = Vector2(0, -400)
-initial_velocity_min = 9.57
-initial_velocity_max = 89.01
+emission_sphere_radius = 1.7
+spread = 23.25
+gravity = Vector2(400, 0)
+initial_velocity_min = 33.49
+initial_velocity_max = 57.41
 radial_accel_min = -81.82
 radial_accel_max = -33.5
 scale_amount_max = 2.0
