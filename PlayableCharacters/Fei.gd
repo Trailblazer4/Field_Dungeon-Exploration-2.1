@@ -8,6 +8,7 @@ func _init():
 
 func _ready():
 	moveset.append(GameData.SpellLibrary["Ar"])
+	moveset.append(GameData.SpellLibrary["Ard"])
 	moveset.append(GameData.SpellLibrary["Temp"])
 	$Sprite2D.set_frame(0)
 

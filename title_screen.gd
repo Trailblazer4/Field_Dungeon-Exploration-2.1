@@ -32,7 +32,23 @@ func consume(materials: Dictionary, inventory: Dictionary):
 
 @onready var combo: Array = []
 
+func lagrange(x, start, mid, end) -> float:
+	if start.x == mid.x or start.x == end.x or mid.x == end.x:
+		push_error("Lagrange interpolation requires distinct x values")
+		return 0.0
+	
+	return start.y * (x - mid.x) * (x - end.x) / ((start.x - mid.x) * (start.x - end.x)) \
+			+ mid.y * (x - start.x) * (x - end.x) / ((mid.x - start.x) * (mid.x - end.x)) \
+			+ end.y * (x - start.x) * (x - mid.x) / ((end.x - start.x) *(end.x - mid.x))
+
 func _ready():
+	print(lagrange(
+		3,
+		Vector2(1, 2),
+		Vector2(2, 3),
+		Vector2(4, 1)
+	)) # should print out 2.67
+	
 	var line1: Vector2 = Vector2(0, 5)
 	var line2: Vector2 = Vector2(5, 0)
 	print(line1 * line2)
@@ -92,13 +108,14 @@ func _ready():
 	#link.unequip("Weapon 1")
 	#link.info()
 
+
 func _input(event):
 	#print(event)
 	add_to_combo(event)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	if Input.is_action_just_pressed("start"):
+	if Input.is_action_just_pressed("start") || Input.is_action_just_pressed("click"):
 		Overlay.play("fadeout_menu")
 		var anim_name = await Overlay.finished()
 		if anim_name == "fadeout_menu":

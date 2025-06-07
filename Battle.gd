@@ -1,7 +1,7 @@
 extends Node2D
 
 signal battle_over
-signal move_used
+signal move_used(user, move, target, crit_hit)
 
 var q: Array[bool] = [true, false, false, false, false]
 func transition(i: int, j: int):
@@ -69,8 +69,9 @@ var stop_process = false
 func _process(delta):
 	if debug_mode || stop_process:
 		if Input.is_action_just_pressed("ui_accept"):
-			var ardent = load("res://ard_2.tscn").instantiate()
-			ardent.position = Vector2(786, 143)
+			var ardent = load("res://Animations/Spells/Ard.tscn").instantiate()
+			ardent.start_pos = Vector2(786, 143)
+			ardent.end_pos = ardent.start_pos + Vector2(-500, 500)
 			ardent.scale = Vector2(2, 2)
 			add_child(ardent)
 		return
@@ -82,6 +83,9 @@ func _process(delta):
 		return
 	
 	if allGone(enemies):
+		$"Battle HUD/BattlePrompt".visible = true
+		$"Battle HUD/BattlePrompt/ColorRect/Label".text = "You win!"
+		await get_tree().create_timer(3).timeout
 		done()
 		stop_process = true
 		return
@@ -125,12 +129,14 @@ func _process(delta):
 			var theresATarget = chooseScreen()
 			if theresATarget:
 				var used = await thisTurn.get_child(0).use(chosenMove, target)
+				
 				# TODO: design decision: should the prompt be skipped, or should it play but say "{name} is frozen!"?
-				if used != -1:
-					emit_signal("move_used")
+				if used is bool:
+					emit_signal("move_used", thisTurn, chosenMove, target, used)
 					stop_process = true
 					await get_node("Battle HUD/BattlePrompt").battle_continue
 					stop_process = false
+				
 				if target.getHP() <= 0:
 					target.setHP(0)
 					#target.visible = false
@@ -380,8 +386,8 @@ func enemyTurn():
 	decided = true
 	
 	# TODO: design decision: should the prompt be skipped, or should it play but say "{name} is frozen!"?
-	if used != -1:
-		emit_signal("move_used")
+	if used is bool:
+		emit_signal("move_used", thisTurn, chosenMove, receiver, used)
 		stop_process = true
 		await get_node("Battle HUD/BattlePrompt").battle_continue
 		stop_process = false
@@ -466,6 +472,8 @@ func place_position(nme: Entity, currAmount: int):
 			nme.position.x = -200
 		3:
 			nme.position.x = -300
+		4:
+			nme.position.x = -400
 	nme.position.x -= (currAmount % 3) * 25
 
 
@@ -528,6 +536,7 @@ func done():
 		print("%s's statuses: " % returning.myName, returning.status_effects)
 		returning.info()
 	#get_tree().change_scene_to_packed(GameData.Levels[0])
+	GameData.transition(2, 0)
 	get_tree().change_scene_to_packed(GameData.Levels[GameData.current_level])
 	for nme in enemies:
 		nme.get_child(0).queue_free()

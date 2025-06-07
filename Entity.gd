@@ -158,9 +158,9 @@ func equip(slot: String, eq: Equipment):
 
 func basic_attack():
 	print(myName, ": ", current_equipment["Weapon 1"].type)
-	var atk_name = current_equipment["Weapon 1"].title
-	if atk_name == "Empty":
-		atk_name = "Punch"
+	var atk_name = current_equipment["Weapon 1"].basic_attack()
+	#if atk_name == "Empty":
+		#atk_name = "Punch"
 	return Spell.new(atk_name, GameData.Element.VOID, 5, 0, current_equipment["Weapon 1"].type)
 
 
@@ -206,7 +206,7 @@ func addAtk(m: int):
 	add_mod[2] += m
 
 func multAtk(m: float):
-	mult_mod[2] *= m
+	mult_mod[2] += m
 
 func getAtk():
 	return round((stats[2] + add_mod[2]) * mult_mod[2])
@@ -274,8 +274,10 @@ func checkHP():
 	setHP(new_hp)
 
 
+signal crit
 func use(skill, target: Entity, test = false): # skill is of type Spell or Item
 	var can_go = true # for now "middle" effects just affect whether you can move.
+	var crit_hit = false
 	for effect in status_effects:
 		var result = effect.call(self, 3)
 		#print("Can Go Result: ", result)
@@ -320,6 +322,12 @@ func use(skill, target: Entity, test = false): # skill is of type Spell or Item
 				return og_hp - new_hp # how much damage was dealt
 				#return totalDmg - target.getMgDf()
 			else:
+				# critical hit check
+				var crit_chance = 70
+				if randi_range(1, 100) <= crit_chance:
+					totalDmg *= 1.5
+					crit_hit = true
+					crit.emit()
 				target.setHP(target.getHP() - totalDmg)
 			for j in range(len(chance)):
 				#print("You have a ", chance[j], "% chance to hit ", skill.status_effects[j], ".")
@@ -340,10 +348,14 @@ func use(skill, target: Entity, test = false): # skill is of type Spell or Item
 		target.setHP(0)
 	if target.getHP() > target.getMaxHP():
 		target.setHP(target.getMaxHP())
-	target.health_bar.health = target.getHP()
+	
+	#target.health_bar.health = target.getHP() # TODO: delay this until animation reaches "impact" signal
+	
 	#print("Dealing ", og_hp - target.getHP(), " damage on", target.myName, ". has mgdf ", target.getMgDf())
 	for effect in status_effects:
 		effect.call(self, 4)
+	
+	return crit_hit
 
 
 func handle_statuses(until: int, target: Entity, skill, dm: float, chance: Array[float], changes, test = false):

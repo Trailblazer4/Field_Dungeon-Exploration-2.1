@@ -1,7 +1,5 @@
 extends Node2D
 
-class_name SpellAnim
-
 
 enum Anim {
 	SHOT, # shoots from source to destination position
@@ -30,7 +28,9 @@ signal finished
 
 static func shot(sub, s: Vector2, f: Vector2) -> SpellAnim:
 	var new_sp_an = SpellAnim.new()
+	sub = load(sub).instantiate()
 	new_sp_an.subject = sub
+	sub.anim_data = new_sp_an
 	new_sp_an.start = s
 	new_sp_an.fin = f
 	new_sp_an.type = Anim.SHOT
@@ -38,7 +38,9 @@ static func shot(sub, s: Vector2, f: Vector2) -> SpellAnim:
 
 static func stationary(sub, s: Vector2) -> SpellAnim:
 	var new_sp_an = SpellAnim.new()
+	sub = load(sub).instantiate()
 	new_sp_an.subject = sub
+	sub.anim_data = new_sp_an
 	new_sp_an.start = s
 	new_sp_an.fin = null
 	new_sp_an.type = Anim.STATIONARY
@@ -46,7 +48,9 @@ static func stationary(sub, s: Vector2) -> SpellAnim:
 
 static func middle(sub) -> SpellAnim:
 	var new_sp_an = SpellAnim.new()
+	sub = load(sub).instantiate()
 	new_sp_an.subject = sub
+	sub.anim_data = new_sp_an
 	new_sp_an.start = null
 	new_sp_an.fin = null
 	new_sp_an.type = Anim.MIDDLE
@@ -60,10 +64,12 @@ func _ready():
 		start = get_viewport().get_visible_rect().size / 2
 	
 	position = start
+	
+	# dont need these for now
 	# wait for appear and fade in
-	appear.connect(on_appear)
+	#appear.connect(on_appear)
 	# wait for move and then move toward target
-	move.connect(on_move)
+	#move.connect(on_move)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

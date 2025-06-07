@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://pm6aj7ela2nm"]
+
+[ext_resource type="Texture2D" uid="uid://c3826283n7lvh" path="res://Gale.png" id="1_l4vwl"]
+[ext_resource type="Script" path="res://Animations/Spells/tempest.gd" id="2_38tyk"]
+
+[node name="Tempest" type="CPUParticles2D"]
+amount = 15
+lifetime = 10.0
+speed_scale = 2.0
+texture = ExtResource("1_l4vwl")
+emission_shape = 3
+emission_rect_extents = Vector2(50, 300)
+gravity = Vector2(-150, 0)
+scale_amount_min = 2.0
+scale_amount_max = 4.0
+script = ExtResource("2_38tyk")

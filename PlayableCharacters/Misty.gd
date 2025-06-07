@@ -8,6 +8,7 @@ func _init():
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	moveset.append(GameData.SpellLibrary["Au"])
+	moveset.append(GameData.SpellLibrary["Aurora"])
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

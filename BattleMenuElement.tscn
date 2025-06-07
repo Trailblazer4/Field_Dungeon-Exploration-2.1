@@ -1,14 +1,17 @@
-[gd_scene format=3 uid="uid://ddde1mxiijoo1"]
+[gd_scene load_steps=2 format=3 uid="uid://ddde1mxiijoo1"]
+
+[ext_resource type="Script" path="res://battle_menu_element.gd" id="1_j7kpv"]
 
 [node name="BattleMenuElement" type="Control"]
 custom_minimum_size = Vector2(301, 30)
 layout_mode = 3
-anchor_right = 0.176
-anchor_bottom = 0.086
-offset_right = 98.248
-offset_bottom = -15.728
+anchor_right = 0.261
+anchor_bottom = 0.062
+offset_right = 0.328003
+offset_bottom = -0.176003
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_j7kpv")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="."]
 custom_minimum_size = Vector2(271, 2.08165e-12)
@@ -17,6 +20,7 @@ offset_left = 6.0
 offset_top = -1.0
 offset_right = 277.0
 offset_bottom = 26.0
+mouse_filter = 2
 split_offset = 10
 
 [node name="Icon" type="Label" parent="HSplitContainer"]
@@ -41,4 +45,8 @@ layout_mode = 1
 offset_right = 301.0
 offset_bottom = 27.0
 scale = Vector2(0.96, 1)
+mouse_filter = 2
 color = Color(0, 0.72549, 0.709804, 0.509804)
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

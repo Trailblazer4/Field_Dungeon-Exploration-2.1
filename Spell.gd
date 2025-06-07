@@ -17,6 +17,16 @@ enum weapon_types {
 	CHAIN,
 }
 
+enum Stat {
+	HP,
+	SP,
+	ATK,
+	DEF,
+	MAG,
+	MGDF,
+	SPD
+}
+
 var title: String
 var element: GameData.Element
 var power: int

@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://cfe3w3ly24qmy"]
+
+[ext_resource type="Script" path="res://Animations/Spells/punch.gd" id="1_s5piw"]
+
+[sub_resource type="Curve" id="Curve_pncmg"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.496296, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[node name="Punch" type="Sprite2D"]
+script = ExtResource("1_s5piw")
+jump_curve = SubResource("Curve_pncmg")

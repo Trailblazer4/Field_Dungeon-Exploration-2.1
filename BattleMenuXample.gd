@@ -101,7 +101,7 @@ func _process(delta):
 			limits[0] += 1; limits[1] += 1
 			$VBoxContainer.get_child(limits[1]).visible = true
 	
-	if Input.is_action_just_pressed("confirm") and len(spells) > 0:
+	if (Input.is_action_just_pressed("confirm") || Input.is_action_just_pressed("click")) and len(spells) > 0 and cursor > -1:
 		item_selection.emit(spells[cursor], self)
 
 

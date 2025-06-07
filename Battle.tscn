@@ -26,7 +26,6 @@ shader = ExtResource("2_fkb2x")
 
 [node name="Battle" type="Node2D"]
 script = ExtResource("1_i6x73")
-debug_mode = true
 
 [node name="Camera2D" type="Camera2D" parent="."]
 z_index = 1
@@ -166,8 +165,9 @@ offset_bottom = -80.0
 
 [node name="BattlePrompt" parent="Battle HUD" instance=ExtResource("10_2o6qr")]
 visible = false
-position = Vector2(-286, 117)
+offset = Vector2(300, 450)
 scale = Vector2(0.8, 0.8)
+transform = Transform2D(0.8, 0, 0, 0.8, 300, 450)
 script = ExtResource("11_rvruc")
 
 [node name="Timer" type="Timer" parent="Battle HUD/BattlePrompt"]

@@ -2,7 +2,7 @@
 
 [ext_resource type="Shader" path="res://center_glow.gdshader" id="1_11g86"]
 [ext_resource type="Texture2D" uid="uid://ii5o4v7cfxl3" path="res://images/Ard.png" id="2_7r2to"]
-[ext_resource type="Script" path="res://example.gd" id="3_p0hg0"]
+[ext_resource type="Script" path="res://Animations/Spells/ard.gd" id="3_p0hg0"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rowy2"]
 shader = ExtResource("1_11g86")

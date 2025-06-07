@@ -1,0 +1,30 @@
+[gd_scene load_steps=5 format=3 uid="uid://pka5tkjh5wbg"]
+
+[ext_resource type="Texture2D" uid="uid://ctiqpuglh8jmn" path="res://Ice Block.png" id="1_rq4mt"]
+[ext_resource type="Script" path="res://Animations/Spells/aurora.gd" id="2_p1l0q"]
+[ext_resource type="Texture2D" uid="uid://c4dv0smt77a76" path="res://Snowflake.png" id="3_hdx86"]
+
+[sub_resource type="Gradient" id="Gradient_vxy3s"]
+offsets = PackedFloat32Array(0, 0.349845, 0.659443, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 0.835294, 1, 1, 1, 0.835294, 1, 1, 1, 0)
+
+[node name="Aurora" type="Sprite2D"]
+self_modulate = Color(1, 1, 1, 0.784314)
+position = Vector2(1, 0)
+scale = Vector2(1.25, 1.5625)
+texture = ExtResource("1_rq4mt")
+script = ExtResource("2_p1l0q")
+
+[node name="CPUParticles2D" type="CPUParticles2D" parent="."]
+position = Vector2(0, 5.12)
+amount = 30
+lifetime = 4.0
+texture = ExtResource("3_hdx86")
+emission_shape = 3
+emission_rect_extents = Vector2(25, 30)
+gravity = Vector2(0, 0)
+radial_accel_min = 0.74
+radial_accel_max = 0.74
+scale_amount_min = 0.01
+scale_amount_max = 0.15
+color_ramp = SubResource("Gradient_vxy3s")

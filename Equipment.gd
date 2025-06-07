@@ -56,6 +56,24 @@ func move_titles():
 	return moves
 
 
+func basic_attack():
+	match type:
+		weapons.NONE, weapons.MISSING, weapons.GAUNTLETS:
+			return "Punch"
+		weapons.BROADSWORD, weapons.KATANA:
+			return "Slash"
+		weapons.POLEARM, weapons.DAGGERS:
+			return "Stab"
+		weapons.STAFF:
+			return "Thrust"
+		weapons.HANDGUN, weapons.SNIPER:
+			return "Shoot"
+		weapons.HAMMER:
+			return "Slam"
+		weapons.CHAIN:
+			return "Whip"
+
+
 func _to_string():
 	return '''%s
 HP: %d   SP: %d

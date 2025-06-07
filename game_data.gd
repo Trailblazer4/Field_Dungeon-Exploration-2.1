@@ -31,6 +31,7 @@ var atom = load("res://PlayableCharacters/Atom.tscn").instantiate()
 var zero = load("res://PlayableCharacters/Zero.tscn").instantiate()
 var clodsire = load("res://PlayableCharacters/Clodsire.tscn").instantiate()
 
+signal status_update(status_call)
 # define status functions here followed by creating a list of funcrefs
 func burn(e: Entity, effect: int, move = null):
 	match effect:
@@ -40,14 +41,16 @@ func burn(e: Entity, effect: int, move = null):
 			e.multMgDf(0.5)
 			e.info()
 			var new_status_icon = get_status_icon("Burn")
-			e.health_bar.get_node("StatusIconList").add_child(new_status_icon)
+			#e.health_bar.get_node("StatusIconList").add_child(new_status_icon)
+			status_update.emit(func(): e.health_bar.get_node("StatusIconList").add_child(new_status_icon))
 		1: # called right when effect popped from Entity, status_effects[i].call(self, 1)
 			print(e.myName, " is no longer burned!")
 			print(e.myName, " mgdf back to normal.")
 			e.multMgDf(2.0)
 			e.info()
 			var icon_list = e.health_bar.get_node("StatusIconList")
-			icon_list.remove_child(icon_list.get_node("Burn Symbol"))
+			#icon_list.remove_child(icon_list.get_node("Burn Symbol"))
+			status_update.emit(func(): icon_list.remove_child(icon_list.get_node("Burn Symbol")))
 		#2: # called at the start of every turn. Burn doesn't do anything for this effect so it can be passed as default.
 		
 		#3: # called in the middle of every turn, after selecting an action
@@ -87,13 +90,13 @@ func freeze(e: Entity, effect: int, move = null):
 			print(e.myName, " spd cut in half!")
 			e.multSpd(0.5)
 			var new_status_icon = get_status_icon("Freeze")
-			e.health_bar.get_node("StatusIconList").add_child(new_status_icon)
+			status_update.emit(func(): e.health_bar.get_node("StatusIconList").add_child(new_status_icon))
 		1: # called right when effect popped from Entity, status_effects[i].call(self, 1)
 			print(e.myName, " is no longer frozen!")
 			print(e.myName, " spd back to normal.")
 			e.multSpd(2.0)
 			var icon_list = e.health_bar.get_node("StatusIconList")
-			icon_list.remove_child(icon_list.get_node("Freeze Symbol"))
+			status_update.emit(func(): icon_list.remove_child(icon_list.get_node("Freeze Symbol")))
 		3:  # called right before move is used.
 			# in the case of freeze, this will randomly choose to return
 			# true if the user can move and false if they are frozen and can't move.
@@ -117,11 +120,11 @@ func sick(e: Entity, effect: int, move = null):
 		0: # called right when effect added to Entity, status_effects[i].call(self, 0)
 			print(e.myName, " became sick!")
 			var new_status_icon = get_status_icon("Sick")
-			e.health_bar.get_node("StatusIconList").add_child(new_status_icon)
+			status_update.emit(func(): e.health_bar.get_node("StatusIconList").add_child(new_status_icon))
 		1: # called right when effect popped from Entity, status_effects[i].call(self, 1)
 			print(e.myName, " is no longer sick!")
 			var icon_list = e.health_bar.get_node("StatusIconList")
-			icon_list.remove_child(icon_list.get_node("Sick Symbol"))
+			status_update.emit(func(): icon_list.remove_child(icon_list.get_node("Sick Symbol")))
 		5: # called when an Entity is hit with an attack/Spell/Item. checks whether the move's element has a special effect against this status.
 			return [true, 1.0, 1.8] # dmg_mod stays the same, chance gets higher for a new status to land
 		_: # default
@@ -242,8 +245,16 @@ var StatusDictionary: Dictionary = {
 	"Grounded": Callable(self, "grounded"),
 	"Wet": Callable(self, "wet"),
 	"Steam": Callable(self, "steam"),
-	"Zapped": Callable(self, "zapped"),
+	"Zapped": Callable(self, "zapped")
 }
+
+
+func buff(stat, stages):
+	return func(receiver, effect, _throwaway1=null):
+		if effect == 0:
+			receiver.mult_mod[stat] += stages
+			receiver.info()
+		return [false]
 
 
 # reference the current scene of the game. update this in the _ready() function of each level in the game
@@ -259,12 +270,15 @@ var SpellLibrary: Dictionary = {
 	"Ard": Spell.new("Ard", Element.FIRE, 20, 40, Spell.weapon_types.MAGIC, [StatusDictionary["Burn"]], [30]),
 	"Au": Spell.new("Au", Element.ICE, 10, 20, Spell.weapon_types.MAGIC, [StatusDictionary["Freeze"]], [20]),
 	"Auro": Spell.new("Auro", Element.ICE, 20, 40, Spell.weapon_types.MAGIC, [StatusDictionary["Freeze"]], [30]),
+	"Aurora": Spell.new("Aurora", Element.ICE, 50, 60, Spell.weapon_types.MAGIC, [StatusDictionary["Freeze"]], [40]),
 	"Re": Spell.new("Re", Element.HEAL, 10, 20, Spell.weapon_types.MAGIC),
 	"Reli": Spell.new("Reli", Element.HEAL, 15, 30, Spell.weapon_types.MAGIC),
+	"Relief": Spell.new("Relief", Element.HEAL, 30, 60, Spell.weapon_types.MAGIC),
 	"Te": Spell.new("Te", Element.WIND, 10, 20, Spell.weapon_types.MAGIC, [StatusDictionary["Sick"]], [10]),
 	"Temp": Spell.new("Temp", Element.WIND, 20, 40, Spell.weapon_types.MAGIC, [StatusDictionary["Sick"]], [20]),
+	"Tempest": Spell.new("Tempest", Element.WIND, 50, 60, Spell.weapon_types.MAGIC, [StatusDictionary["Sick"]], [30]),
 	"Pew Pew": Spell.new("Pew Pew", Element.LIGHTNING, 15, 0, Spell.weapon_types.HANDGUN),
-	"Rocket Boosters": Spell.new("Rocket Boosters", Element.LIGHTNING, 0, 20, Spell.weapon_types.MAGIC),
+	"Rocket Boosters": Spell.new("Rocket Boosters", Element.LIGHTNING, 0, 20, Spell.weapon_types.MAGIC, [buff(Spell.Stat.ATK, 1)], [100]),
 	"Goddess Strike": Spell.new("Goddess Strike", Element.LIGHT, 25, 40, Spell.weapon_types.BROADSWORD),
 }
 
