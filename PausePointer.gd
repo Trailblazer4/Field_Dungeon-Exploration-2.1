@@ -19,9 +19,24 @@ func _process(delta):
 			position.y = 20
 			get_parent().get_parent().get_node("Highlight").visible = true
 		if Input.is_action_just_pressed("confirm"):
-			count = roundi((position.y - 20) / 140)
+			if PauseMenu.pauseQ == 0:
+				count = roundi((position.y - 20) / 140)
+				visible = false
+				#GameData.party.get_child(count).get_child(0).info()
+				var status_screen = load("res://character_status_screen.tscn").instantiate()
+				PauseMenu.add_child(status_screen)
+				PauseMenu.pauseQ = 1
+			elif PauseMenu.get_node("Items").inventory:
+				var e = GameData.party.member(count)
+				e.use(PauseMenu.get_node("Items").chosen_item, e)
+				GameData.rm_from_inventory(PauseMenu.get_node("Items").chosen_item)
+				PauseMenu.pauseQ = 0
+				var rid = PauseMenu.get_node("Items").inventory
+				rid.queue_free()
+				PauseMenu.get_node("Items").remove_child(rid)
+				PauseMenu.get_node("Items").inventory = null
+				visible = false
+		if Input.is_action_just_pressed("cancel") && PauseMenu.get_node("Items").inventory:
 			visible = false
-			#GameData.party.get_child(count).get_child(0).info()
-			var status_screen = load("res://character_status_screen.tscn").instantiate()
-			PauseMenu.add_child(status_screen)
-			PauseMenu.pauseQ = 1
+			PauseMenu.get_node("Items").inventory.visible = true
+			print("Go back to inventory")

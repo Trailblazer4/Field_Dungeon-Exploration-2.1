@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://thjahmxtep5y"]
+
+[ext_resource type="Script" path="res://quick_time_button.gd" id="1_xtk4c"]
+
+[node name="QuickTimeButton" type="Sprite2D"]
+script = ExtResource("1_xtk4c")
+
+[node name="Timer" type="Timer" parent="."]
+one_shot = true

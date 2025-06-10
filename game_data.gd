@@ -227,6 +227,15 @@ func zapped(e: Entity, effect: int, move = null):
 		_: # default
 			pass
 
+
+func poison(e: Entity, effect: int, move = null):
+	match effect:
+		0:
+			print(e.myName, " was poisoned!")
+	
+	return [false]
+
+
 func get_status_icon(status_title: String) -> TextureRect:
 	var new_status_icon = TextureRect.new()
 	new_status_icon.name = "%s Symbol" % status_title
@@ -245,7 +254,8 @@ var StatusDictionary: Dictionary = {
 	"Grounded": Callable(self, "grounded"),
 	"Wet": Callable(self, "wet"),
 	"Steam": Callable(self, "steam"),
-	"Zapped": Callable(self, "zapped")
+	"Zapped": Callable(self, "zapped"),
+	"Poison": Callable(self, "poison")
 }
 
 
@@ -264,7 +274,16 @@ func set_current_scene():
 
 
 var SpellLibrary: Dictionary = {
-	"Punch": Spell.new("Punch", Element.VOID, 100, 0, Spell.weapon_types.GAUNTLETS),
+	"Punch": Spell.new("Punch", Element.VOID, 5, 0, Spell.weapon_types.GAUNTLETS), # maybe Stagger effect
+	"Slash": Spell.new("Slash", Element.VOID, 7, 0, Spell.weapon_types.BROADSWORD),
+	"Cut": Spell.new("Cut", Element.VOID, 7, 0, Spell.weapon_types.KATANA, [buff(Spell.Stat.MGDF, -1)], [8]),
+	"Pierce": Spell.new("Pierce", Element.VOID, 7, 0, Spell.weapon_types.POLEARM, [buff(Spell.Stat.DEF, -1)], [8]),
+	"Stab": Spell.new("", Element.VOID, 7, 0, Spell.weapon_types.DAGGERS, [StatusDictionary["Poison"]], [12]),
+	"Thrust": Spell.new("", Element.VOID, 6, 0, Spell.weapon_types.STAFF, [buff(Spell.Stat.ATK, -1)], [8]),
+	"Shoot": Spell.new("", Element.VOID, 3, 0, Spell.weapon_types.HANDGUN, [buff(Spell.Stat.DEF, -1), buff(Spell.Stat.MGDF, -1)], [8, 8]),
+	"Snipe": Spell.new("Snipe", Element.VOID, 7, 0, Spell.weapon_types.SNIPER, [buff(Spell.Stat.DEF, -1), StatusDictionary["Grounded"]], [8, 8]),
+	"Slam": Spell.new("", Element.VOID, 8, 0, Spell.weapon_types.HAMMER, [buff(Spell.Stat.SPD, -1)], [8]),
+	"Whip": Spell.new("", Element.VOID, 6, 0, Spell.weapon_types.CHAIN, [buff(Spell.Stat.MAG, -1)], [8]),
 	"Super Punch": Spell.new("Super Punch", Element.VOID, 12, 10, Spell.weapon_types.GAUNTLETS),
 	"Ar": Spell.new("Ar", Element.FIRE, 10, 20, Spell.weapon_types.MAGIC, [StatusDictionary["Burn"]], [20]),
 	"Ard": Spell.new("Ard", Element.FIRE, 20, 40, Spell.weapon_types.MAGIC, [StatusDictionary["Burn"]], [30]),
@@ -382,7 +401,7 @@ var chests = {
 var inventory = [
 	[load("res://ItemLibrary/Elixir.tscn").instantiate(), 99],
 ]
-func add_to_inventory(i: Item, amt: int=1):
+func add_to_inventory(i, amt: int=1):
 	for item in inventory:
 		if item[0].title == i.title:
 			item[1] += amt
@@ -390,6 +409,13 @@ func add_to_inventory(i: Item, amt: int=1):
 			return
 	inventory.append([i, amt]) # items are only instantiated once in memory
 																		  # paired with a counter
+func rm_from_inventory(i, amt: int=1):
+	for item in inventory:
+		if item[0].title == i.title:
+			item[1] -= amt
+			if item[1] < 1:
+				inventory.erase(item)
+			return
 
 
 # handling screen fade transitions

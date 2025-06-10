@@ -60,14 +60,20 @@ func basic_attack():
 	match type:
 		weapons.NONE, weapons.MISSING, weapons.GAUNTLETS:
 			return "Punch"
-		weapons.BROADSWORD, weapons.KATANA:
+		weapons.BROADSWORD:
 			return "Slash"
-		weapons.POLEARM, weapons.DAGGERS:
+		weapons.KATANA:
+			return "Cut"
+		weapons.POLEARM:
+			return "Pierce"
+		weapons.DAGGERS:
 			return "Stab"
 		weapons.STAFF:
 			return "Thrust"
-		weapons.HANDGUN, weapons.SNIPER:
+		weapons.HANDGUN:
 			return "Shoot"
+		weapons.SNIPER:
+			return "Snipe"
 		weapons.HAMMER:
 			return "Slam"
 		weapons.CHAIN:

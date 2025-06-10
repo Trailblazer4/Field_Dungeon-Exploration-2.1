@@ -129,7 +129,8 @@ func unequip(slot: String, newEq: Equipment = Equipment.new("Empty", current_equ
 	for j in range(len(newEq.moveset)):
 		moveset.append(newEq.moveset[j])
 	
-	if prev.name == "Empty":
+	if prev.title == "Empty":
+		print("Got rid of empty")
 		prev.queue_free()
 	else:
 		#GameData.inventory.put(prev) # put will check if that item is currently in the inventory and if it is, will add 1 to counter,
@@ -161,7 +162,8 @@ func basic_attack():
 	var atk_name = current_equipment["Weapon 1"].basic_attack()
 	#if atk_name == "Empty":
 		#atk_name = "Punch"
-	return Spell.new(atk_name, GameData.Element.VOID, 5, 0, current_equipment["Weapon 1"].type)
+	#return Spell.new(atk_name, GameData.Element.VOID, 5, 0, current_equipment["Weapon 1"].type)
+	return GameData.SpellLibrary[atk_name]
 
 
 var defending: bool = false
@@ -275,7 +277,7 @@ func checkHP():
 
 
 signal crit
-func use(skill, target: Entity, test = false): # skill is of type Spell or Item
+func use(skill, target: Entity, test = false, no_crit := false): # skill is of type Spell or Item
 	var can_go = true # for now "middle" effects just affect whether you can move.
 	var crit_hit = false
 	for effect in status_effects:
@@ -295,6 +297,8 @@ func use(skill, target: Entity, test = false): # skill is of type Spell or Item
 		var chance: Array[float] = skill.status_chances.duplicate()
 		#var totalDmg = (skill.power + getMag()) # - (target.getMgDf())
 		var totalDmg = (skill.power / 3) * skill.damage_formula(self, target)
+		print("FORMULA COMPONENTS: ", skill.power, "\n", skill.damage_formula(self, target))
+		print("TOTAL DAMAGE DEALT: ", totalDmg)
 		if skill.element == GameData.Element.HEAL:
 			if test:
 				var new_hp = min(target.getMaxHP(), target.getHP() + totalDmg)
@@ -323,10 +327,11 @@ func use(skill, target: Entity, test = false): # skill is of type Spell or Item
 				#return totalDmg - target.getMgDf()
 			else:
 				# critical hit check
-				var crit_chance = 70
-				if randi_range(1, 100) <= crit_chance:
+				var crit_chance = 5
+				if !no_crit && randi_range(1, 100) <= crit_chance:
 					totalDmg *= 1.5
 					crit_hit = true
+					print("Critical hit!")
 					crit.emit()
 				target.setHP(target.getHP() - totalDmg)
 			for j in range(len(chance)):

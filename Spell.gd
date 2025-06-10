@@ -29,7 +29,13 @@ enum Stat {
 
 var title: String
 var element: GameData.Element
-var power: int
+var power: int:
+	set(v):
+		if power == 0:
+			power = v
+		else:
+			push_error("DO NOT CHANGE POWER")
+
 var spReq: int
 var status_effects: Array[Callable] = []
 var status_chances: Array[float] = []
@@ -40,9 +46,9 @@ func _init(t: String, e: GameData.Element, p: int, spr: int, wt: weapon_types, s
 	element = e
 	power = p
 	spReq = spr
+	weapon_type = wt
 	status_effects = se
 	status_chances = sc
-	weapon_type = wt
 #
 #func _ready():
 	#pass # Replace with function body.
@@ -94,3 +100,17 @@ func damage_formula(user: Entity, target: Entity):
 		if element != GameData.Element.VOID:
 			pwr += (user.getMag() * 0.07)
 		return pwr
+
+
+func clone() -> Spell:
+	var new_spell = Spell.new(
+		title,
+		element,
+		power,
+		spReq,
+		weapon_type,
+		status_effects.duplicate(true),
+		status_chances.duplicate(true)
+	)
+	
+	return new_spell

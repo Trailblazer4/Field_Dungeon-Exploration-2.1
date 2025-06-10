@@ -15,6 +15,11 @@ func update_cache(f: Callable):
 	status_cache.append(f)
 
 
+func player_dodged(target):
+	target.setHP(round(target.health_bar.health))
+	status_cache.clear()
+
+
 func on_move_used(user, move, target, crit_hit):
 	#$ColorRect/Label.text = "%s used %s!" % [battle.thisTurn.get_child(0).myName, battle.chosenMove.title]
 	$ColorRect/Label.text = "%s used %s!" % [user.get_child(0).myName, move.title]

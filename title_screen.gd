@@ -41,7 +41,17 @@ func lagrange(x, start, mid, end) -> float:
 			+ mid.y * (x - start.x) * (x - end.x) / ((mid.x - start.x) * (mid.x - end.x)) \
 			+ end.y * (x - start.x) * (x - mid.x) / ((end.x - start.x) *(end.x - mid.x))
 
+var changing: int:
+	set(v):
+		if changing == 0:
+			changing = v
+		else:
+			push_error("DO NOT CHANGE POWER")
 func _ready():
+	changing = 5
+	#changing = 3
+	print(changing)
+	
 	print(lagrange(
 		3,
 		Vector2(1, 2),

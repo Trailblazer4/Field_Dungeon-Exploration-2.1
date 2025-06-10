@@ -8,7 +8,7 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	if visible:
+	if visible && PauseMenu.pauseQ == 0:
 		if Input.is_action_just_pressed("up") and get_parent().cursor > 0:
 			position.y -= 142
 			get_parent().cursor -= 1

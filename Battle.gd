@@ -28,7 +28,10 @@ var turnSet: bool = false
 func _ready():
 	Overlay.scaleTo(Vector2(1200, 700))
 	Overlay.play("fadein_menu")
-	if debug_mode: return
+	if debug_mode:
+		GameData.transition(0, 2)
+		end.connect(e)
+		return
 	
 	print(GameData.q)
 	print("Character: ", GameData.ALL_PLAYABLE_CHARACTERS[0])
@@ -65,15 +68,23 @@ var decided: bool = false # was a decision made in this turn yet?
 var decision: String = "" # is the decision an attack, spell, or item?
 var chosenMove = null # what move or item specifically?
 
+signal end
+func e(): print("YOU'RE DONE")
+
 var stop_process = false
 func _process(delta):
 	if debug_mode || stop_process:
 		if Input.is_action_just_pressed("ui_accept"):
-			var ardent = load("res://Animations/Spells/Ard.tscn").instantiate()
-			ardent.start_pos = Vector2(786, 143)
-			ardent.end_pos = ardent.start_pos + Vector2(-500, 500)
-			ardent.scale = Vector2(2, 2)
-			add_child(ardent)
+			var qtb = QuickTimeButton.with(5, func(): print("Nice press!"), func(): end.emit(), 0.8, 0.5)
+			qtb.position = get_viewport_rect().size / 2
+			qtb.scale *= 0.3
+			add_child(qtb)
+		#if Input.is_action_just_pressed("ui_accept"):
+			#var ardent = load("res://Animations/Spells/Ard.tscn").instantiate()
+			#ardent.start_pos = Vector2(786, 143)
+			#ardent.end_pos = ardent.start_pos + Vector2(-500, 500)
+			#ardent.scale = Vector2(2, 2)
+			#add_child(ardent)
 		return
 
 	# instant battle end

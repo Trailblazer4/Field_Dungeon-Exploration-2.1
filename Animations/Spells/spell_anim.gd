@@ -37,6 +37,8 @@ static func from(name: String, user, start_pos: Vector2, target, end_pos=null):
 	
 	var anim_info = load("res://Animations/Spells/%s.tscn" % name)
 	var new_anim = anim_info.instantiate()
+	new_anim.name = name
+	print("New Anim name: ", new_anim.name)
 	new_anim.user = user
 	new_anim.start_pos = start_pos
 	new_anim.target = target
@@ -52,3 +54,16 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	pass
+
+
+## return a Vector2 with the direction this spell faces
+func dir_faced():
+	return user.position.direction_to(target.position)
+
+
+## return -1 if facing somwhere left,
+## 1 if facing somwhere right,
+## or 0 if facing directly up or down
+func dir_lr_scalar():
+	var lr = dir_faced().x
+	return -1 if lr < 0 else 1 if lr > 0 else 0
